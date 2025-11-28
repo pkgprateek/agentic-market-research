@@ -1,6 +1,6 @@
 """Analysis Agent for competitive intelligence and SWOT analysis."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker

@@ -1,7 +1,7 @@
 """Unit tests for base agent class."""
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker

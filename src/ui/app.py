@@ -1,7 +1,6 @@
 """Gradio UI for Market Intelligence System."""
 
 import gradio as gr
-import asyncio
 from datetime import datetime
 
 from src.workflows.intelligence import MarketIntelligenceWorkflow
@@ -170,10 +169,6 @@ Status: {"✅ Approved" if result.get("approved") else "❌ Not Approved"}
                 gr.Markdown("### 📊 Full Intelligence Report")
 
                 report_display = gr.Markdown()
-
-                with gr.Row():
-                    download_md_btn = gr.Button("📄 Download Markdown")
-                    download_txt_btn = gr.Button("📝 Download Text")
 
         # Event handlers
         run_btn.click(
