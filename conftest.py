@@ -15,5 +15,5 @@ def mock_env(monkeypatch):
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-mock-key")
     monkeypatch.setenv("TAVILY_API_KEY", "tvly-mock-key")
     monkeypatch.setenv("LANGSMITH_API_KEY", "lsv2-mock-key")
-    monkeypatch.setenv("LANGCHAIN_TRACING_V2", "false")
+    monkeypatch.setenv("LANGCHAIN_TRACING", "false")
     monkeypatch.setenv("LANGCHAIN_PROJECT", "test-project")

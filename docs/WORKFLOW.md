@@ -114,7 +114,7 @@ Environment variables (`.env`):
 ```bash
 DEFAULT_MODEL=x-ai/grok-4.1-fast:free
 MAX_COST_PER_RUN=2.0
-LANGCHAIN_TRACING_V2=true
+LANGCHAIN_TRACING=true
 ```
 
 ## Observability
@@ -125,7 +125,7 @@ LangSmith integration provides:
 - Cost tracking per call
 - Performance bottleneck identification
 
-Enable: Set `LANGCHAIN_TRACING_V2=true` in `.env`
+Enable: Set `LANGCHAIN_TRACING=true` in `.env`
 
 Dashboard: https://smith.langchain.com
 

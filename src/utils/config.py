@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     langsmith_api_key: str | None = Field(
         None, description="LangSmith API key for tracing"
     )
-    langchain_tracing_v2: bool = Field(True, description="Enable LangChain tracing")
+    langchain_tracing: bool = Field(True, description="Enable LangChain tracing")
     langchain_project: str = Field(
         "market-intelligence-prod", description="LangSmith project name"
     )
