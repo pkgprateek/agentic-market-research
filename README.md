@@ -73,8 +73,7 @@ graph LR
     ```bash
     python -m venv venv
     source venv/bin/activate
-    pip install -e .  # Installs project in editable mode (Professional)
-    # Or: pip install -r requirements.txt (Legacy)
+    pip install uv && uv pip install -r requirements.txt
     ```
 
 3.  **Configure credentials:**

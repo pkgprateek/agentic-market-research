@@ -5,7 +5,7 @@ import asyncio
 import logging
 import queue
 import tempfile
-
+import os
 from datetime import datetime
 
 from src.workflows.market_analysis import MarketIntelligenceWorkflow
@@ -327,5 +327,10 @@ def create_ui():
 
 
 if __name__ == "__main__":
+    # Check if running in a deployment environment (Docker/HF)
+    # HF Spaces sets 'SPACE_ID' env var
+    is_deployment = os.getenv("SPACE_ID") or os.getenv("IS_DOCKER")
+    server_name = "0.0.0.0" if is_deployment else "127.0.0.1"
+
     app = create_ui()
-    app.launch(server_name="0.0.0.0", server_port=7860, share=False, show_error=True)
+    app.launch(server_name=server_name, server_port=7860, share=False, show_error=True)

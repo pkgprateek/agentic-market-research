@@ -31,4 +31,4 @@ ENV PYTHONPATH=/app
 EXPOSE 8000 7860
 
 # Default command runs both API and UI
-CMD ["python", "src/ui/app.py"]
+CMD ["python", "-m", "src.ui.app"]
