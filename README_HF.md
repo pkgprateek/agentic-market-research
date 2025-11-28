@@ -38,4 +38,4 @@ AI-powered competitive intelligence automation using multi-agent orchestration.
 
 ---
 
-Built by Prateek Kumar Goel | [GitHub](https://github.com/pkgprateek/agentic-research-orchestrator)
+Built by Prateek Kumar Goel | [GitHub](https://github.com/pkgprateek/agentic-market-research)
