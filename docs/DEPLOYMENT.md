@@ -2,23 +2,6 @@
 
 Multi-agent AI system for automated competitive market intelligence.
 
-## Deployment Strategy
-
-**Recommended: GitHub Actions → HuggingFace Spaces**
-
-This approach demonstrates production-grade CI/CD practices valued in 2025 hiring:
-
-### Why This Stack
-
-| Approach | Setup Time | Hiring Signal | Monthly Cost |
-|----------|------------|---------------|--------------|
-| **GitHub Actions → HF Spaces** | **15 min** | **⭐⭐⭐⭐⭐** | **$0** |
-| Direct git push to HF | 5 min | ⭐⭐⭐ | $0 |
-| Custom VPS | 4 hours | ⭐⭐⭐⭐ | $10-50 |
-| No deployment | 0 min | ⭐ | $0 |
-
-**Critical for 2025:** Hiring managers expect live demos. GitHub code without deployment = ignored.
-
 ### Setup Instructions
 
 **1. Create HuggingFace Space**
