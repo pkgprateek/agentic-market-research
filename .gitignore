@@ -54,3 +54,10 @@ docs/_build/
 *.tmp
 *.temp
 .cache/
+
+# Test outputs (keep one final sample report only)
+test_report.md
+workflow_test_report.md
+test_checkpoints.db
+checkpoints.db
+checkpoints.db-*
