@@ -2,67 +2,113 @@
 
 Multi-agent AI system for automated competitive market intelligence.
 
-## Deployment
+## Deployment Strategy
 
-**RECOMMENDATION: HuggingFace Spaces (Free Tier)**
+**Recommended: GitHub Actions → HuggingFace Spaces**
 
-Why HuggingFace over VPS for AI portfolios in 2025:
-- Zero DevOps setup required
-- Free forever (2 vCPU, 16GB RAM)
-- Live demo = instant credibility
-- Git push deployment
-- Discoverable and shareable URL
-- No cold starts with persistent mode
+This approach demonstrates production-grade CI/CD practices valued in 2025 hiring:
 
-### Deploy to HuggingFace Spaces
+### Why This Stack
 
-1. Create Space at https://huggingface.co/spaces
-2. Choose "Gradio" as SDK
-3. Clone and push:
+| Approach | Setup Time | Hiring Signal | Monthly Cost |
+|----------|------------|---------------|--------------|
+| **GitHub Actions → HF Spaces** | **15 min** | **⭐⭐⭐⭐⭐** | **$0** |
+| Direct git push to HF | 5 min | ⭐⭐⭐ | $0 |
+| Custom VPS | 4 hours | ⭐⭐⭐⭐ | $10-50 |
+| No deployment | 0 min | ⭐ | $0 |
+
+**Critical for 2025:** Hiring managers expect live demos. GitHub code without deployment = ignored.
+
+### Setup Instructions
+
+**1. Create HuggingFace Space**
 
 ```bash
-git remote add hf https://huggingface.co/spaces/YOUR_USERNAME/market-research-agent
-git push hf main
+# Go to https://huggingface.co/spaces
+# Click "Create new Space"
+# Name: agentic-market-research
+# SDK: Gradio
+# Hardware: Free CPU
 ```
 
-4. Add secrets in Space settings:
-   - `OPENROUTER_API_KEY`
-   - `TAVILY_API_KEY`
-   - `LANGSMITH_API_KEY` (optional)
+**2. Add HF Token to GitHub Secrets**
 
-5. Space automatically deploys on push
+```bash
+# Get token from https://huggingface.co/settings/tokens
+# GitHub repo → Settings → Secrets → New repository secret
+# Name: HF_TOKEN
+# Value: [your HF token]
+```
 
-### Alternative: Docker Deployment
+**3. Configure Space Secrets**
 
-For custom infrastructure:
+In HF Space settings, add:
+- `OPENROUTER_API_KEY` - Your OpenRouter API key
+- `TAVILY_API_KEY` - Your Tavily API key  
+- `LANGSMITH_API_KEY` - (Optional) LangSmith key
+
+**4. Update Workflow**
+
+Edit `.github/workflows/deploy-hf.yml` line 23:
+```yaml
+git remote add hf https://YOUR_HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/YOUR_HF_USERNAME/SPACE_NAME
+```
+
+**5. Deploy**
+
+```bash
+git push origin main
+# GitHub Actions automatically deploys to HF Spaces
+# Check workflow at: github.com/your-repo/actions
+```
+
+### What This Demonstrates
+
+**For Technical Hiring:**
+- CI/CD automation (not just code upload)
+- Production deployment workflow
+- Secrets management
+- Automated testing before deploy
+
+**For Consulting Clients:**
+- Professional deployment practices
+- Zero-downtime updates
+- Automated quality checks
+- Production-ready infrastructure
+
+### Alternative: Local Docker
+
+For development or custom infrastructure:
+
 ```bash
 docker-compose up -d
 # API: http://localhost:8000
 # UI: http://localhost:7860
 ```
 
-## Cost Comparison
+## Post-Deployment
 
-| Platform | Setup | Monthly Cost | Hiring Impact |
-|----------|-------|--------------|---------------|
-| HF Spaces (Free) | 5 min | $0 | ⭐⭐⭐⭐⭐ Live demo |
-| HF Spaces (GPU) | 5 min | $60+ | ⭐⭐⭐⭐ Production-grade |
-| Custom VPS | 2-4 hours | $10-50 | ⭐⭐⭐ DevOps skill proof |
-| No deployment | 0 min | $0 | ⭐ Just code |
+**Add to Resume/Portfolio:**
+```
+Agentic Market Research System
+- Live demo: https://huggingface.co/spaces/YOUR_USERNAME/agentic-market-research
+- Tech: LangGraph, FastAPI, Gradio, GitHub Actions
+- Impact: 80x faster market research, $0.50 vs $3,000 cost
+- Automated CI/CD deployment pipeline
+```
 
-**2025 Reality:** Hiring managers won't review GitHub code without a live demo. HF Spaces solves this.
+**For Consulting Proposals:**
+1. Link to live demo (instant credibility)
+2. "Try it yourself" call-to-action
+3. ROI calculator based on client size
+4. Sample report from real analysis
 
-## For Consulting Portfolio
+### Monitoring
 
-Package this as:
-- "AI Competitive Intelligence System" 
-- 80x faster than manual research
-- $0.50 vs $3,000 per analysis
-- Live demo: [Your HF Space URL]
+HF Spaces provides:
+- Auto-scaling (up to 4 replicas on free tier)
+- Usage analytics
+- Error logging
+- Uptime monitoring
 
-Include in proposals:
-1. Link to live demo
-2. ROI calculator (customize per client)
-3. Sample report (from real run)
-
-This shows you ship production systems, not just POCs.
+Access at: `https://huggingface.co/spaces/YOUR_USERNAME/SPACE_NAME/logs`

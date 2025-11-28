@@ -1,0 +1,35 @@
+name: Deploy to HuggingFace Spaces
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        lfs: true
+    
+    - name: Push to HuggingFace Spaces
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        
+        # Add HF remote (create Space first at huggingface.co/spaces)
+        git remote add hf https://prateekkumargoel:$HF_TOKEN@huggingface.co/spaces/prateekkumargoel/agentic-market-research || true
+        
+        # Copy HF-specific README
+        cp README_HF.md README.md
+        git add README.md
+        git commit -m "Update README for HF Space" || true
+        
+        # Push to HF Spaces
+        git push hf main --force
