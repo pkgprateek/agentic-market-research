@@ -83,8 +83,8 @@ graph TB
 ### Installation
 
 ```bash
-git clone https://github.com/pkgprateek/agentic-research-orchestrator.git
-cd agentic-research-orchestrator
+git clone https://github.com/pkgprateek/agentic-market-research.git
+cd agentic-market-research
 
 python -m venv venv
 source venv/bin/activate
@@ -179,7 +179,7 @@ Current coverage: 29 unit tests + 4 integration tests, all passing.
 ## Project Structure
 
 ```
-agentic-research-orchestrator/
+agentic-market-research/
 ├── src/
 │   ├── agents/              # Research, Analysis, Writer agents
 │   ├── workflows/           # LangGraph state and orchestration
@@ -232,8 +232,8 @@ docker-compose up
 
 **Production Deployment:**
 1. Configure environment variables in `.env`
-2. Build container: `docker build -t market-intelligence .`
-3. Run: `docker run -p 8000:8000 -p 7860:7860 market-intelligence`
+2. Build container: `docker build -t agentic-market-research .`
+3. Run: `docker run -p 8000:8000 -p 7860:7860 agentic-market-research`
 
 For production deployments, configure:
 - Persistent volume for checkpoint storage
@@ -273,4 +273,4 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
-Built by Prateek Kumar Goel | [GitHub](https://github.com/pkgprateek/agentic-research-orchestrator)
+Built by Prateek Kumar Goel | [GitHub](https://github.com/pkgprateek/agentic-market-research)

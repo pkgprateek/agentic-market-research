@@ -1,10 +1,8 @@
 """Integration tests for workflow error handling and cost limits."""
 
 import pytest
-from unittest.mock import AsyncMock, patch
 
 from src.workflows.intelligence import MarketIntelligenceWorkflow
-from src.utils.cost_tracker import BudgetExceededError
 
 
 @pytest.mark.asyncio
