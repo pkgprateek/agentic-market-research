@@ -13,7 +13,7 @@ from src.api.schemas import (
     HistoryResponse,
     HistoryItem,
 )
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 from src.utils.logging import setup_logger
 
 logger = setup_logger(__name__)

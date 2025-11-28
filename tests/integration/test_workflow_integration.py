@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 
 
 @pytest.mark.asyncio
@@ -118,7 +118,7 @@ class TestWorkflowCheckpointing:
         workflow = MarketIntelligenceWorkflow(checkpoint_path=checkpoint_path)
 
         # Checkpoint file should be created when workflow is compiled
-        assert workflow.workflow is not None
+        assert workflow.graph_builder is not None
 
         # Clean up
         if os.path.exists(checkpoint_path):

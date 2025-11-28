@@ -12,7 +12,9 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install uv and dependencies
+RUN pip install uv && \
+    uv pip install --system --no-cache-dir -r requirements.txt
 
 # Copy application
 COPY src/ ./src/
@@ -26,4 +28,4 @@ RUN mkdir -p data logs
 EXPOSE 8000 7860
 
 # Default command runs both API and UI
-CMD uvicorn src.api.main:app --host 0.0.0.0 --port 8000 & python src/ui/app.py
+CMD uvicorn src.api.main:app --host 0.0.0.0 --port 7860 & python src/ui/app.py

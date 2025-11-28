@@ -3,7 +3,7 @@
 import gradio as gr
 from datetime import datetime
 
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 from src.utils.logging import setup_logger
 
 logger = setup_logger(__name__)

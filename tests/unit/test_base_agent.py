@@ -7,7 +7,7 @@ from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker
 
 
-class TestAgent(BaseAgent):
+class MockAgent(BaseAgent):
     """Concrete test agent for testing base class."""
 
     def get_system_prompt(self) -> str:
@@ -29,7 +29,7 @@ async def test_base_agent_initialization():
             openrouter_base_url="https://openrouter.ai/api/v1",
         )
 
-        agent = TestAgent(
+        agent = MockAgent(
             name="TestAgent",
             model="openai/gpt-5-mini",
             temperature=0.5,
@@ -51,7 +51,7 @@ async def test_base_agent_uses_default_model():
             openrouter_base_url="https://openrouter.ai/api/v1",
         )
 
-        agent = TestAgent(name="TestAgent")
+        agent = MockAgent(name="TestAgent")
 
         assert agent.model_name == "x-ai/grok-4.1-fast:free"
 
@@ -66,7 +66,7 @@ async def test_create_messages():
             openrouter_base_url="https://test.com",
         )
 
-        agent = TestAgent(name="TestAgent")
+        agent = MockAgent(name="TestAgent")
 
         messages = agent._create_messages("test user message")
 
@@ -87,7 +87,7 @@ async def test_get_cost_summary():
             openrouter_base_url="https://test.com",
         )
 
-        agent = TestAgent(name="TestAgent", cost_tracker=tracker)
+        agent = MockAgent(name="TestAgent", cost_tracker=tracker)
 
         # Track some usage
         tracker.track_usage("openai/gpt-5-mini", 1000, 500)

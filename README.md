@@ -1,160 +1,126 @@
-# Agentic Market Research
+# Agentic Market Research Orchestrator
 
-Multi-agent AI system that automates competitive market intelligence. 80x faster than manual research, 1500x cheaper.
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/pkgprateek/agentic-market-research)
 
-**[Live Demo →](https://huggingface.co/spaces/pkgprateek/agentic-market-research)**
-
-## The Problem
-
-Competitive market research costs $3,000 and takes 20 hours per analysis. Businesses need faster, cheaper intelligence.
-
-## The Solution
-
-Automated multi-agent system delivers comprehensive market intelligence in 15 minutes for $0.50-$2.
-
-**Architecture:**
-
-```mermaid
-graph LR
-    Input Task --> Research[Research Agent]
-    Research --> Analysis[Analysis Agent]
-    Analysis --> Writer[Writer Agent]
-    Writer --> Report[Intelligence Report]
-    
-    Research -.-> Tavily[Tavily Search]
-    Analysis -.-> LLM[Claude/GPT/Gemini]
-    Writer -.-> LLM
-    
-    style Research fill:#7ed321
-    style Analysis fill:#f5a623
-    style Writer fill:#bd10e0
-```
-
-**Agents:**
-- **Research**: Web search + data gathering (Tavily API)
-- **Analysis**: SWOT analysis + competitive positioning
-- **Writer**: Professional markdown reports with citations
-
-**Stack:** LangGraph | OpenRouter | FastAPI | Gradio | Docker
-
-## Quick Start
-
-```bash
-git clone https://github.com/pkgprateek/agentic-market-research.git
-cd agentic-market-research
-
-# Install
-python -m venv venv && source venv/bin/activate
-pip install uv && uv pip install -r requirements.txt
-
-# Configure
-cp .env.example .env
-# Add OPENROUTER_API_KEY and TAVILY_API_KEY
-
-# Run
-python src/ui/app.py
-# Open http://localhost:7860
-```
-
-## Key Features
-
-| Feature | Implementation | Business Value |
-|---------|---------------|----------------|
-| Multi-agent orchestration | LangGraph state machine | Reliable, reproducible results |
-| Cost tracking | Real-time budget enforcement | Prevent runaway costs |
-| State persistence | SQLite checkpoints | Resume after failures |
-| Human-in-the-loop | Approval workflow | Quality control gate |
-| Observability | LangSmith integration | Debug production issues |
-
-## Economics
-
-| Approach | Time | Cost | Result |
-|----------|------|------|--------|
-| Manual analyst | 20 hours | $3,000 | Variable quality |
-| This system | 15 minutes | $0.50-$2 | Consistent reports |
-| **Improvement** | **80x** | **1500-6000x** | **Standardized** |
-
-## Model Options
-
-Configure via `.env`:
-
-```bash
-# Free (testing)
-DEFAULT_MODEL=x-ai/grok-4.1-fast:free
-
-# Production (best quality)
-DEFAULT_MODEL=anthropic/claude-sonnet-4.5
-```
-
-Supports 400+ models via OpenRouter.
-
-## API
-
-```python
-from src.workflows.intelligence import MarketIntelligenceWorkflow
-
-workflow = MarketIntelligenceWorkflow()
-result = await workflow.run(
-    company_name="Tesla Model Y",
-    industry="Electric Vehicles"
-)
-print(result["full_report"])
-```
-
-REST API at `http://localhost:8000/docs` when running `uvicorn src.api.main:app`
-
-## Testing
-
-```bash
-pytest tests/unit/ -v        # 18 tests
-pytest tests/integration/ -v # Integration tests
-```
-
-## Deployment
-
-**Production:** [HuggingFace Spaces](https://huggingface.co/spaces/pkgprateek/agentic-market-research) (auto-deploys via GitHub Actions)
-
-**Local:** `docker-compose up`
-
-## Technical Highlights
-
-**For Hiring Managers:**
-- Production-grade error handling and state management
-- Automated CI/CD pipeline (GitHub Actions → HF Spaces)
-- Cost optimization ($0-$2 vs $3,000 manual research)
-- Real-world business value (80x time savings)
-
-**For Technical Teams:**
-- LangGraph 1.0.4 for multi-agent coordination
-- AsyncSqliteSaver for checkpoint persistence
-- OpenRouter for cost-optimized LLM routing
-- Comprehensive testing (unit + integration)
-- FastAPI async background tasks
-
-## Project Structure
-
-```
-agentic-market-research/
-├── src/
-│   ├── agents/       # Research, Analysis, Writer
-│   ├── workflows/    # LangGraph orchestration
-│   ├── api/          # FastAPI endpoints
-│   └── ui/           # Gradio interface
-├── tests/
-│   ├── unit/         # 18 passing tests
-│   └── integration/  # Workflow integration tests
-└── docs/             # Technical documentation
-```
-
-## Documentation
-
-- [Workflow Architecture](docs/WORKFLOW.md) - Implementation details
-- [API Docs](http://localhost:8000/docs) - Interactive API reference
-
-## License
-
-MIT
+> **Enterprise-grade multi-agent system for automated competitive intelligence.**  
+> Delivers comprehensive market research reports in 15 minutes at <1% of the cost of traditional methods.
 
 ---
 
-**Built by Prateek Kumar Goel** | [GitHub](https://github.com/pkgprateek/agentic-market-research) | [Live Demo](https://huggingface.co/spaces/pkgprateek/agentic-market-research)
+## 🚀 Overview
+
+The **Agentic Market Research Orchestrator** is a sophisticated AI system designed to automate the labor-intensive process of competitive market analysis. By orchestrating a team of specialized AI agents, it transforms a simple company name into a strategic intelligence report, covering SWOT analysis, competitor landscape, and market positioning.
+
+**Key Value Proposition:**
+*   **Speed:** Reduces research time from 20+ hours to ~15 minutes (80x faster).
+*   **Cost Efficiency:** Lowers cost from ~$3,000 to $0.50-$2.00 per report (1500x cheaper).
+*   **Scalability:** Standardized, reproducible outputs suitable for high-volume analysis.
+
+## 🏗️ Architecture
+
+The system utilizes a **LangGraph** state machine to coordinate three specialized agents, ensuring a robust and fault-tolerant workflow.
+
+```mermaid
+graph LR
+    Input[User Input] --> Research[Research Agent]
+    Research --> Analysis[Analysis Agent]
+    Analysis --> Writer[Writer Agent]
+    Writer --> Report[Final Intelligence Report]
+    
+    Research -.->|Tavily API| Web[Live Web Search]
+    Analysis -.->|LLM| Inference[Contextual Analysis]
+    Writer -.->|LLM| Formatting[Markdown Generation]
+    
+    style Research fill:#e1f5fe,stroke:#01579b
+    style Analysis fill:#fff3e0,stroke:#ef6c00
+    style Writer fill:#f3e5f5,stroke:#7b1fa2
+```
+
+### Agent Roles
+1.  **Research Agent:** Executes targeted web searches using Tavily API to gather raw data on competitors, pricing, and features.
+2.  **Analysis Agent:** Synthesizes raw data into structured insights, performing SWOT and gap analysis.
+3.  **Writer Agent:** Compiles insights into a professional, citation-backed Markdown report.
+
+## 🛠️ Tech Stack
+
+*   **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (State management & coordination)
+*   **LLM Integration:** [OpenRouter](https://openrouter.ai/) (Access to Claude 3.5 Sonnet, GPT-4o, etc.)
+*   **Search:** [Tavily AI](https://tavily.com/) (Optimized for LLM research)
+*   **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Async REST API)
+*   **Frontend:** [Gradio](https://www.gradio.app/) (Interactive UI)
+*   **Infrastructure:** Docker & Docker Compose
+
+## ⚡ Quick Start
+
+### Prerequisites
+*   Python 3.12+
+*   Docker (optional)
+*   API Keys: OpenRouter, Tavily
+
+### Local Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/pkgprateek/agentic-market-research.git
+    cd agentic-market-research
+    ```
+
+2.  **Set up environment:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    pip install uv && uv pip install -r requirements.txt
+    ```
+
+3.  **Configure credentials:**
+    ```bash
+    cp .env.example .env
+    # Edit .env with your OPENROUTER_API_KEY and TAVILY_API_KEY
+    ```
+
+4.  **Run the application:**
+    ```bash
+    # Run both API and UI
+    python src/ui/app.py
+    ```
+    Access the UI at `http://localhost:7860`.
+
+### Docker Deployment
+
+```bash
+docker-compose up --build
+```
+
+## 🧪 Testing & Quality Assurance
+
+This project maintains high code quality standards with comprehensive testing and linting.
+
+*   **Unit Tests:** `pytest tests/unit/`
+*   **Integration Tests:** `pytest tests/integration/`
+*   **Linting:** `ruff check src/ tests/`
+*   **Type Checking:** `mypy src/`
+
+## 📊 Performance Metrics
+
+| Metric | Manual Analyst | Agentic Orchestrator | Improvement |
+| :--- | :--- | :--- | :--- |
+| **Time to Report** | 20 Hours | 15 Minutes | **80x** |
+| **Cost per Report** | ~$3,000 | ~$1.50 | **2000x** |
+| **Consistency** | Variable | High | **Standardized** |
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Built by Prateek Kumar Goel**  
+[GitHub](https://github.com/pkgprateek) | [LinkedIn](https://linkedin.com/in/pkgprateek)

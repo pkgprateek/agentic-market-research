@@ -86,7 +86,7 @@ Errors accumulate in `state["errors"]`:
 
 **Basic:**
 ```python
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 
 workflow = MarketIntelligenceWorkflow()
 result = await workflow.run(

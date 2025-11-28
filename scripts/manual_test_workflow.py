@@ -6,7 +6,7 @@ Replaces test_agents.py with proper workflow orchestration.
 
 import asyncio
 
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 
 
 async def test_workflow():
@@ -63,15 +63,15 @@ async def test_workflow():
 
         # Save report
         with open("workflow_test_report.md", "w") as f:
-            f.write(f"# Market Intelligence Report\n\n")
-            f.write(f"Generated via LangGraph Workflow\n\n")
-            f.write(f"---\n\n")
+            f.write("# Market Intelligence Report\n\n")
+            f.write("Generated via LangGraph Workflow\n\n")
+            f.write("---\n\n")
             f.write(final_state["full_report"])
-            f.write(f"\n\n---\n\n")
+            f.write("\n\n---\n\n")
             f.write(f"**Cost:** ${final_state['total_cost']:.4f}\n")
             f.write(f"**Tokens:** {final_state['total_tokens']:,}\n")
 
-        print(f"\n\nReport saved to: workflow_test_report.md")
+        print("\n\nReport saved to: workflow_test_report.md")
         print("\nTest PASSED!")
 
     except Exception as e:

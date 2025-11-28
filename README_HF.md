@@ -3,7 +3,7 @@ title: Agentic Market Research
 emoji: 🔍
 colorFrom: blue
 colorTo: purple
-sdk: gradio
+sdk: docker
 sdk_version: "5.0.0"
 app_file: src/ui/app.py
 pinned: false

@@ -3,7 +3,7 @@
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 
-from src.workflows.state import IntelligenceState
+from src.workflows.types import IntelligenceState
 from src.agents.researcher import ResearchAgent
 from src.agents.analyst import AnalysisAgent
 from src.agents.writer import WriterAgent
@@ -44,8 +44,8 @@ class MarketIntelligenceWorkflow:
         self.analysis_agent = AnalysisAgent(cost_tracker=self.cost_tracker)
         self.writer_agent = WriterAgent(cost_tracker=self.cost_tracker)
 
-        # Build workflow graph
-        self.workflow = self._build_graph()
+        # Build workflow graph blueprint
+        self.graph_builder = self._build_graph()
 
         logger.info("Market Intelligence Workflow initialized")
 
@@ -79,10 +79,7 @@ class MarketIntelligenceWorkflow:
             {"approved": END, "revise": "research", "max_revisions": END},
         )
 
-        # Compile with async SQLite checkpointing
-        # AsyncSqliteSaver returns async context manager, store reference
-        checkpointer = AsyncSqliteSaver.from_conn_string(self.checkpoint_path)
-        return graph.compile(checkpointer=checkpointer)
+        return graph
 
     async def _research_node(self, state: IntelligenceState) -> dict:
         """Research agent node."""
@@ -276,11 +273,16 @@ class MarketIntelligenceWorkflow:
             "revision_count": 0,
         }
 
-        # Run workflow
+        # Run workflow with async checkpointer
         config = {"configurable": {"thread_id": thread_id or "default"}}
 
         try:
-            final_state = await self.workflow.ainvoke(initial_state, config)
+            async with AsyncSqliteSaver.from_conn_string(
+                self.checkpoint_path
+            ) as checkpointer:
+                workflow = self.graph_builder.compile(checkpointer=checkpointer)
+                final_state = await workflow.ainvoke(initial_state, config)
+
             logger.info(f"Workflow complete. Cost: ${final_state['total_cost']:.4f}")
             return final_state
 

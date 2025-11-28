@@ -2,8 +2,8 @@
 
 import pytest
 
-from src.workflows.state import IntelligenceState
-from src.workflows.intelligence import MarketIntelligenceWorkflow
+from src.workflows.types import IntelligenceState
+from src.workflows.market_analysis import MarketIntelligenceWorkflow
 
 
 class TestIntelligenceState:
