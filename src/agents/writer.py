@@ -1,11 +1,17 @@
 """Writer Agent for generating professional market intelligence reports."""
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker
 from src.utils.logging import setup_logger
+from src.utils.prompts import (
+    WRITER_EXECUTIVE_SUMMARY,
+    WRITER_FULL_REPORT,
+    WRITER_SYSTEM,
+)
+from src.workflows.types import AnalysisOutput, ReportOutput, ResearchOutput
 
 logger = setup_logger(__name__)
 
@@ -43,33 +49,13 @@ class WriterAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get system prompt for writer agent."""
-        return """You are a professional business report writer specializing in market intelligence and competitive analysis.
-
-Your role is to transform research and analysis into polished, executive-ready reports.
-
-When writing reports, you should:
-1. Use clear, professional business language
-2. Structure content logically with proper headings
-3. Include executive summaries for busy stakeholders
-4. Use bullet points and tables for scannability
-5. Cite sources properly
-6. Make insights actionable
-
-Report format guidelines:
-- Use markdown formatting
-- Include clear section headers (#, ##, ###)
-- Use tables for competitive comparisons
-- Include bullet points for lists
-- Add citations [source]
-- Keep executive summary to 200-300 words
-
-Write for senior executives and decision-makers."""
+        return WRITER_SYSTEM
 
     async def run(  # type: ignore[override]
         self,
-        research_data: Dict[str, Any],
-        analysis_data: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        research_data: ResearchOutput,
+        analysis_data: AnalysisOutput,
+    ) -> ReportOutput:
         """
         Generate comprehensive market intelligence report.
 
@@ -83,7 +69,7 @@ Write for senior executives and decision-makers."""
                 - full_report: Complete markdown report
                 - metadata: Report metadata (date, sources count, etc.)
         """
-        company_name = research_data.get("company_name", "Unknown Company")
+        company_name = research_data.get("company_name")
         logger.info(f"Starting report generation for: {company_name}")
 
         try:
@@ -119,133 +105,41 @@ Write for senior executives and decision-makers."""
 
     async def _write_executive_summary(
         self,
-        research_data: Dict[str, Any],
-        analysis_data: Dict[str, Any],
+        research_data: ResearchOutput,
+        analysis_data: AnalysisOutput,
     ) -> str:
-        """
-        Write executive summary (200-300 words).
-
-        Args:
-            research_data: Research results
-            analysis_data: Analysis results
-
-        Returns:
-            Executive summary text
-        """
-        company_name = research_data.get("company_name")
-
-        user_message = f"""Write a concise executive summary for a market intelligence report on {company_name}.
-
-Use this information:
-
-COMPANY OVERVIEW:
-{research_data.get("company_overview", "")}
-
-KEY INSIGHTS FROM SWOT:
-{analysis_data.get("swot", "")}
-
-STRATEGIC RECOMMENDATIONS:
-{analysis_data.get("strategic_recommendations", "")}
-
-Requirements:
-- 200-300 words
-- Cover: company overview, market position, key findings, main recommendations
-- Written for senior executives (clear, actionable)
-- Professional business tone
-
-Start directly with content (no "Executive Summary" heading)."""
-
-        messages = self._create_messages(user_message)
-        response = await self._invoke_llm(messages)
-
-        return response
+        """Write executive summary (200-300 words)."""
+        user_message = WRITER_EXECUTIVE_SUMMARY.format(
+            company_name=research_data.get("company_name"),
+            company_overview=research_data.get("company_overview", ""),
+            swot=analysis_data.get("swot", ""),
+            strategic_recommendations=analysis_data.get(
+                "strategic_recommendations", ""
+            ),
+        )
+        return await self._invoke_llm(self._create_messages(user_message))
 
     async def _write_full_report(
         self,
-        research_data: Dict[str, Any],
-        analysis_data: Dict[str, Any],
+        research_data: ResearchOutput,
+        analysis_data: AnalysisOutput,
         exec_summary: str,
     ) -> str:
-        """
-        Write complete markdown report.
-
-        Args:
-            research_data: Research results
-            analysis_data: Analysis results
-            exec_summary: Executive summary
-
-        Returns:
-            Full report in markdown format
-        """
+        """Write complete markdown report."""
         company_name = research_data.get("company_name")
-        industry = research_data.get("industry") or "Market"
 
-        # Build comprehensive context
-        context = f"""
-COMPANY: {company_name}
-INDUSTRY: {industry}
-
-RESEARCH DATA:
-Company Overview: {research_data.get("company_overview", "")}
-Competitors: {research_data.get("competitors", "")}
-Market Trends: {research_data.get("market_trends", "")}
-
-ANALYSIS DATA:
-SWOT: {analysis_data.get("swot", "")}
-Competitive Matrix: {analysis_data.get("competitive_matrix", "")}
-Market Positioning: {analysis_data.get("positioning", "")}
-Strategic Recommendations: {analysis_data.get("strategic_recommendations", "")}
-
-EXECUTIVE SUMMARY:
-{exec_summary}
-"""
-
-        user_message = f"""Create a comprehensive market intelligence report for {company_name} in markdown format.
-
-Use all the provided research and analysis data.
-
-Structure the report as follows:
-
-# Market Intelligence Report: {company_name}
-
-## Executive Summary
-[Insert the provided executive summary]
-
-## 1. Company Overview
-[Detailed company information from research]
-
-## 2. Competitive Landscape
-[Competitor analysis and competitive matrix]
-
-## 3. SWOT Analysis
-[Detailed SWOT with clear sections: Strengths, Weaknesses, Opportunities, Threats]
-
-## 4. Market Positioning
-[Positioning analysis and differentiation]
-
-## 5. Market Trends & Insights
-[Industry trends and market dynamics]
-
-## 6. Strategic Recommendations
-[Prioritized recommendations with rationale]
-
-## 7. Sources
-[List key sources used]
-
----
-Report generated: {datetime.now().strftime("%B %d, %Y")}
-
-Data to use:
-{context}
-
-Format requirements:
-- Use proper markdown (headers, bullets, tables)
-- Make it professional and polished
-- Include all relevant details
-- Cite sources where appropriate
-- Make it actionable for executives"""
-
-        messages = self._create_messages(user_message)
-        response = await self._invoke_llm(messages)
-
-        return response
+        user_message = WRITER_FULL_REPORT.format(
+            company_name=company_name,
+            exec_summary=exec_summary,
+            company_overview=research_data.get("company_overview", ""),
+            competitors=research_data.get("competitors", ""),
+            competitive_matrix=analysis_data.get("competitive_matrix", ""),
+            swot=analysis_data.get("swot", ""),
+            positioning=analysis_data.get("positioning", ""),
+            market_trends=research_data.get("market_trends", ""),
+            strategic_recommendations=analysis_data.get(
+                "strategic_recommendations", ""
+            ),
+            date=datetime.now().strftime("%B %d, %Y"),
+        )
+        return await self._invoke_llm(self._create_messages(user_message))

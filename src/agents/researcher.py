@@ -1,11 +1,18 @@
 """Research Agent for gathering market intelligence data."""
 
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.tools.search import TavilySearchTool
 from src.utils.cost_tracker import CostTracker
 from src.utils.logging import setup_logger
+from src.utils.prompts import (
+    RESEARCHER_ANALYZE_COMPANY,
+    RESEARCHER_ANALYZE_COMPETITORS,
+    RESEARCHER_ANALYZE_TRENDS,
+    RESEARCHER_SYSTEM,
+)
+from src.workflows.types import ResearchOutput
 
 logger = setup_logger(__name__)
 
@@ -46,26 +53,14 @@ class ResearchAgent(BaseAgent):
 
     def get_system_prompt(self) -> str:
         """Get system prompt for research agent."""
-        return """You are a professional business research analyst specializing in competitive intelligence.
-
-Your role is to gather and synthesize information about companies, markets, and competitors from web sources.
-
-When analyzing search results, you should:
-1. Focus on factual, verifiable information
-2. Identify key data points: revenue, employees, products, market position
-3. Note dates and sources for important claims
-4. Distinguish between facts and opinions
-5. Highlight competitive advantages and weaknesses
-
-Provide your analysis in a structured format with clear sections and bullet points.
-Always cite sources when making specific claims."""
+        return RESEARCHER_SYSTEM
 
     async def run(  # type: ignore[override]
         self,
         company_name: str,
         industry: Optional[str] = None,
         research_depth: str = "comprehensive",
-    ) -> Dict[str, Any]:
+    ) -> ResearchOutput:
         """
         Gather research data about a company.
 
@@ -83,7 +78,7 @@ Always cite sources when making specific claims."""
         """
         logger.info(f"Starting research for: {company_name}")
 
-        results: Dict[str, Any] = {
+        results: ResearchOutput = {
             "company_name": company_name,
             "industry": industry,
             "company_overview": "",
@@ -99,8 +94,7 @@ Always cite sources when making specific claims."""
                 max_results=10 if research_depth == "comprehensive" else 5,
             )
 
-            if isinstance(results["raw_sources"], list):
-                results["raw_sources"].extend(company_data.get("results", []))
+            results["raw_sources"].extend(company_data.get("results", []))
 
             # Analyze company data with LLM
             company_context = self.search_tool.format_results_for_llm(company_data)
@@ -116,8 +110,7 @@ Always cite sources when making specific claims."""
                 max_results=10 if research_depth == "comprehensive" else 5,
             )
 
-            if isinstance(results["raw_sources"], list):
-                results["raw_sources"].extend(competitor_data.get("results", []))
+            results["raw_sources"].extend(competitor_data.get("results", []))
 
             competitor_context = self.search_tool.format_results_for_llm(
                 competitor_data
@@ -134,8 +127,7 @@ Always cite sources when making specific claims."""
                     max_results=8 if research_depth == "comprehensive" else 4,
                 )
 
-                if isinstance(results["raw_sources"], list):
-                    results["raw_sources"].extend(trend_data.get("results", []))
+                results["raw_sources"].extend(trend_data.get("results", []))
 
                 trend_context = self.search_tool.format_results_for_llm(trend_data)
                 trend_analysis = await self._analyze_trends(industry, trend_context)
@@ -157,97 +149,30 @@ Always cite sources when making specific claims."""
         company_name: str,
         search_context: str,
     ) -> str:
-        """
-        Analyze company information from search results.
-
-        Args:
-            company_name: Company name
-            search_context: Formatted search results
-
-        Returns:
-            Structured company analysis
-        """
-        user_message = f"""Analyze the following search results about {company_name}.
-
-Provide a structured analysis covering:
-1. Company Overview (founded, headquarters, size)
-2. Products & Services (main offerings)
-3. Business Model (how they make money)
-4. Market Position (market share, ranking)
-5. Key Metrics (revenue, employees, growth)
-
-Search Results:
-{search_context}
-
-Provide your analysis in clear sections with bullet points. Cite sources for specific claims."""
-
-        messages = self._create_messages(user_message)
-        response = await self._invoke_llm(messages)
-
-        return response
+        """Analyze company information from search results."""
+        user_message = RESEARCHER_ANALYZE_COMPANY.format(
+            company_name=company_name, search_context=search_context
+        )
+        return await self._invoke_llm(self._create_messages(user_message))
 
     async def _analyze_competitors(
         self,
         company_name: str,
         search_context: str,
     ) -> str:
-        """
-        Analyze competitor landscape.
-
-        Args:
-            company_name: Target company
-            search_context: Formatted search results
-
-        Returns:
-            Competitor analysis
-        """
-        user_message = f"""Analyze the competitive landscape for {company_name}.
-
-Based on the search results, identify:
-1. Main Competitors (list 3-5 key competitors)
-2. Competitive Positioning (how each differs)
-3. Market Dynamics (who leads, who follows)
-4. Differentiation Factors (what makes each unique)
-
-Search Results:
-{search_context}
-
-Format as a structured list with clear comparisons."""
-
-        messages = self._create_messages(user_message)
-        response = await self._invoke_llm(messages)
-
-        return response
+        """Analyze competitor landscape."""
+        user_message = RESEARCHER_ANALYZE_COMPETITORS.format(
+            company_name=company_name, search_context=search_context
+        )
+        return await self._invoke_llm(self._create_messages(user_message))
 
     async def _analyze_trends(
         self,
         industry: str,
         search_context: str,
     ) -> str:
-        """
-        Analyze market trends.
-
-        Args:
-            industry: Industry name
-            search_context: Formatted search results
-
-        Returns:
-            Trend analysis
-        """
-        user_message = f"""Analyze market trends for the {industry} industry.
-
-Identify:
-1. Key Trends (major shifts in the market)
-2. Growth Drivers (what's fueling growth)
-3. Challenges (obstacles facing the industry)
-4. Future Outlook (predictions for next 1-2 years)
-
-Search Results:
-{search_context}
-
-Provide analysis with clear trends and supporting evidence."""
-
-        messages = self._create_messages(user_message)
-        response = await self._invoke_llm(messages)
-
-        return response
+        """Analyze market trends."""
+        user_message = RESEARCHER_ANALYZE_TRENDS.format(
+            industry=industry, search_context=search_context
+        )
+        return await self._invoke_llm(self._create_messages(user_message))

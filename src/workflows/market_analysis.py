@@ -2,6 +2,7 @@
 
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
+from langgraph.checkpoint.memory import MemorySaver
 
 from src.workflows.types import IntelligenceState
 from src.agents.researcher import ResearchAgent
@@ -108,8 +109,8 @@ class MarketIntelligenceWorkflow:
             return {
                 "current_agent": "research",
                 "research_data": research_results,
-                "competitors": research_results.get("competitors", []),
-                "market_trends": research_results.get("market_trends", {}),
+                "competitors": research_results.get("competitors", ""),
+                "market_trends": research_results.get("market_trends", ""),
                 "raw_sources": research_results.get("raw_sources", []),
                 "iteration": state.get("iteration", 0) + 1,
             }
@@ -137,11 +138,11 @@ class MarketIntelligenceWorkflow:
             # Update state
             return {
                 "current_agent": "analysis",
-                "swot": analysis_results.get("swot", {}),
-                "competitive_matrix": analysis_results.get("competitive_matrix", {}),
-                "positioning": analysis_results.get("positioning", {}),
+                "swot": analysis_results.get("swot", ""),
+                "competitive_matrix": analysis_results.get("competitive_matrix", ""),
+                "positioning": analysis_results.get("positioning", ""),
                 "strategic_recommendations": analysis_results.get(
-                    "strategic_recommendations", {}
+                    "strategic_recommendations", ""
                 ),
             }
 
@@ -167,11 +168,12 @@ class MarketIntelligenceWorkflow:
             report_results = await self.writer_agent.run(
                 research_data=state["research_data"],
                 analysis_data={
-                    "swot": state.get("swot", {}),
-                    "competitive_matrix": state.get("competitive_matrix", {}),
-                    "positioning": state.get("positioning", {}),
+                    "company_name": state["company_name"],
+                    "swot": state.get("swot", ""),
+                    "competitive_matrix": state.get("competitive_matrix", ""),
+                    "positioning": state.get("positioning", ""),
                     "strategic_recommendations": state.get(
-                        "strategic_recommendations", {}
+                        "strategic_recommendations", ""
                     ),
                 },
             )
@@ -265,14 +267,21 @@ class MarketIntelligenceWorkflow:
             "company_name": company_name,
             "industry": industry,
             "research_depth": research_depth,
-            "research_data": {},
-            "competitors": [],
-            "market_trends": {},
+            "research_data": {
+                "company_name": company_name,
+                "industry": industry,
+                "company_overview": "",
+                "competitors": "",
+                "market_trends": "",
+                "raw_sources": [],
+            },
+            "competitors": "",
+            "market_trends": "",
             "raw_sources": [],
-            "swot": {},
-            "competitive_matrix": {},
-            "positioning": {},
-            "strategic_recommendations": {},
+            "swot": "",
+            "competitive_matrix": "",
+            "positioning": "",
+            "strategic_recommendations": "",
             "executive_summary": "",
             "full_report": "",
             "report_metadata": {},
@@ -290,11 +299,16 @@ class MarketIntelligenceWorkflow:
         config = {"configurable": {"thread_id": thread_id or "default"}}
 
         try:
-            async with AsyncSqliteSaver.from_conn_string(
-                self.checkpoint_path
-            ) as checkpointer:
-                workflow = self.graph_builder.compile(checkpointer=checkpointer)
+            if self.checkpoint_path == ":memory:":
+                memory_checkpointer = MemorySaver()
+                workflow = self.graph_builder.compile(checkpointer=memory_checkpointer)
                 final_state = await workflow.ainvoke(initial_state, config)  # type: ignore[arg-type]
+            else:
+                async with AsyncSqliteSaver.from_conn_string(
+                    self.checkpoint_path
+                ) as checkpointer:
+                    workflow = self.graph_builder.compile(checkpointer=checkpointer)
+                    final_state = await workflow.ainvoke(initial_state, config)  # type: ignore[arg-type]
 
             logger.info(f"Workflow complete. Cost: ${final_state['total_cost']:.4f}")
             return final_state

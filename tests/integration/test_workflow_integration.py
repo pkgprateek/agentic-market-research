@@ -12,7 +12,7 @@ class TestWorkflowErrorRecovery:
 
     async def test_research_error_ends_workflow(self):
         """Test workflow ends gracefully when research fails."""
-        workflow = MarketIntelligenceWorkflow()
+        workflow = MarketIntelligenceWorkflow(checkpoint_path=":memory:")
 
         # Mock research to fail
         # Mock research to fail
@@ -29,7 +29,9 @@ class TestWorkflowErrorRecovery:
 
     async def test_budget_exceeded_stops_workflow(self):
         """Test workflow stops when budget is exceeded."""
-        workflow = MarketIntelligenceWorkflow(max_budget=0.001)
+        workflow = MarketIntelligenceWorkflow(
+            max_budget=0.001, checkpoint_path=":memory:"
+        )
 
         # Mock research to succeed with some cost
         # Mock research to succeed with some cost
@@ -37,9 +39,11 @@ class TestWorkflowErrorRecovery:
             workflow.cost_tracker.track_usage("openai/gpt-5-mini", 10000, 5000)
             return {
                 "company_name": "Mock Company",
-                "competitors": [],
-                "market_trends": {},
+                "competitors": "Competitor A, Competitor B",
+                "market_trends": "Market is growing",
                 "raw_sources": [],
+                "industry": "Tech",
+                "company_overview": "Overview",
             }
 
         workflow.research_agent.run = AsyncMock(side_effect=mock_run)
@@ -58,25 +62,28 @@ class TestWorkflowIntegration:
 
     async def test_workflow_with_mocked_agents(self):
         """Test complete workflow with mocked agent responses."""
-        workflow = MarketIntelligenceWorkflow()
+        workflow = MarketIntelligenceWorkflow(checkpoint_path=":memory:")
 
         # Mock all agents
         # Mock all agents
         workflow.research_agent.run = AsyncMock(
             return_value={
                 "company_name": "Test Company",
-                "competitors": [{"name": "Competitor A"}],
-                "market_trends": {"trend": "growing"},
+                "competitors": "Competitor A",
+                "market_trends": "Market growing",
                 "raw_sources": [{"url": "test.com"}],
+                "industry": "Tech",
+                "company_overview": "Overview",
             }
         )
 
         workflow.analysis_agent.run = AsyncMock(
             return_value={
-                "swot": {"strengths": ["good"]},
-                "competitive_matrix": {},
-                "positioning": {},
-                "strategic_recommendations": {},
+                "company_name": "Test Company",
+                "swot": "Strengths: Good",
+                "competitive_matrix": "Matrix data",
+                "positioning": "Leader",
+                "strategic_recommendations": "Buy low sell high",
             }
         )
 
