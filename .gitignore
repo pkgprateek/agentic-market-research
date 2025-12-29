@@ -62,3 +62,6 @@ workflow_test_report.md
 test_checkpoints.db
 checkpoints.db
 checkpoints.db-*
+
+# AI Constitution (personal guidance document)
+CLAUDE.md
