@@ -7,7 +7,6 @@ Uses Material Design Icons (MDI) as specified in CLAUDE.md.
 import asyncio
 import logging
 import os
-import queue
 import tempfile
 from datetime import datetime
 
@@ -28,29 +27,20 @@ MDI_CDN = (
     "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
 )
 
-# Icon mapping per CLAUDE.md Icon Reference
 MDI_ICONS = {
-    "domain": "mdi-domain",  # Company
-    "compare": "mdi-compare",  # Competitive Comparison
-    "earth": "mdi-earth",  # Market Landscape
-    "sword-cross": "mdi-sword-cross",  # Battle Card
-    "cash-multiple": "mdi-cash-multiple",  # Investment
-    "help-circle": "mdi-help-circle",  # Custom Query
+    "domain": "mdi-domain",
+    "compare": "mdi-compare",
+    "earth": "mdi-earth",
+    "sword-cross": "mdi-sword-cross",
+    "cash-multiple": "mdi-cash-multiple",
+    "help-circle": "mdi-help-circle",
 }
-
-
-def mdi(icon: str, label: str) -> str:
-    """Create MDI icon + label for Gradio radio buttons."""
-    icon_class = MDI_ICONS.get(icon, f"mdi-{icon}")
-    return f'<span class="mdi {icon_class}"></span> {label}'
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Research Type Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Using text labels with icon indicators - Gradio Radio doesn't render HTML in choices
-# We'll add visual icons via custom CSS and the description area
 RESEARCH_TYPE_OPTIONS = {
     "Company Analysis": ResearchType.COMPANY_ANALYSIS,
     "Competitive Comparison": ResearchType.COMPETITIVE_COMPARISON,
@@ -60,7 +50,6 @@ RESEARCH_TYPE_OPTIONS = {
     "Custom Query": ResearchType.CUSTOM_QUERY,
 }
 
-# Icons and descriptions per research type
 RESEARCH_TYPE_META = {
     "Company Analysis": {
         "icon": "domain",
@@ -88,87 +77,77 @@ RESEARCH_TYPE_META = {
     },
 }
 
+# Model options for power users who want to test different models
 MODEL_OPTIONS = {
-    "Grok 4.1 Fast (Free)": "x-ai/grok-4.1-fast:free",
-    "GPT-5 Mini (Cheap)": "openai/gpt-5-mini",
-    "Claude Sonnet 4.5 (Best) - Temporarily Unavailable": "anthropic/claude-sonnet-4.5",
-    "Gemini 2.5 Flash Lite (Fast)": "google/gemini-2.5-flash-lite",
+    "Grok 3 (Free)": "x-ai/grok-3-fast:free",
+    "GPT-4.1 Mini": "openai/gpt-4.1-mini",
+    "Claude Sonnet 4": "anthropic/claude-sonnet-4",
+    "Gemini 2.5 Flash": "google/gemini-2.5-flash-preview-05-20",
+}
+
+# Progress messages - human-readable status updates
+PROGRESS_MESSAGES = {
+    "starting": "Initializing research agents...",
+    "research": "Gathering intelligence from multiple sources...",
+    "analysis": "Analyzing competitive landscape and market position...",
+    "writing": "Synthesizing insights into actionable report...",
+    "complete": "Report ready",
 }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Custom CSS with MDI Integration
+# Logging Infrastructure (for progress tracking)
 # ─────────────────────────────────────────────────────────────────────────────
 
-CUSTOM_CSS = """
-/* Import Material Design Icons */
-@import url('https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css');
 
-/* Research type icon display */
-.research-icon {
-    font-size: 1.5rem;
-    margin-right: 0.5rem;
-    vertical-align: middle;
-}
+class ProgressTracker:
+    """Tracks workflow progress for user-friendly status updates."""
 
-/* Description styling */
-.research-description {
-    padding: 0.75rem 1rem;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-    margin-top: 0.5rem;
-}
+    def __init__(self) -> None:
+        self.current_stage = "starting"
+        self.messages: list[str] = []
 
-/* Coming soon banner */
-.coming-soon {
-    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-}
-"""
+    def update(self, stage: str) -> None:
+        self.current_stage = stage
+        if stage in PROGRESS_MESSAGES:
+            self.messages.append(PROGRESS_MESSAGES[stage])
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Logging Infrastructure
-# ─────────────────────────────────────────────────────────────────────────────
+    def get_status(self) -> str:
+        return PROGRESS_MESSAGES.get(self.current_stage, "Processing...")
 
 
 class QueueHandler(logging.Handler):
-    """Routes logs to a queue for real-time streaming."""
+    """Routes logs to progress tracker."""
 
-    def __init__(self, log_queue: queue.Queue[str]) -> None:
+    def __init__(self, tracker: ProgressTracker) -> None:
         super().__init__()
-        self.log_queue = log_queue
+        self.tracker = tracker
 
     def emit(self, record: logging.LogRecord) -> None:
         try:
-            if record.name.startswith("src."):
-                record.name = record.name[4:]
-            self.log_queue.put(self.format(record))
+            msg = record.getMessage().lower()
+            if "research" in msg:
+                self.tracker.update("research")
+            elif "analysis" in msg:
+                self.tracker.update("analysis")
+            elif "writ" in msg:
+                self.tracker.update("writing")
         except Exception:
-            self.handleError(record)
+            pass
 
 
-def setup_log_streaming() -> tuple[queue.Queue[str], QueueHandler]:
-    """Configure log streaming to a queue."""
-    log_queue: queue.Queue[str] = queue.Queue()
-    handler = QueueHandler(log_queue)
-    handler.setFormatter(logging.Formatter("%(name)s - %(levelname)s - %(message)s"))
-    return log_queue, handler
-
-
-def attach_log_handler(handler: QueueHandler) -> None:
-    """Attach handler to root and all src.* loggers."""
+def attach_progress_tracker(tracker: ProgressTracker) -> QueueHandler:
+    """Attach progress tracker to loggers."""
+    handler = QueueHandler(tracker)
     logging.getLogger().addHandler(handler)
     for name, logger_obj in logging.Logger.manager.loggerDict.items():
         if name.startswith("src") and isinstance(logger_obj, logging.Logger):
             logger_obj.addHandler(handler)
+    return handler
 
 
-def detach_log_handler(handler: QueueHandler) -> None:
-    """Remove handler from all loggers."""
+def detach_progress_tracker(handler: QueueHandler) -> None:
+    """Remove progress tracker from loggers."""
     logging.getLogger().removeHandler(handler)
     for name, logger_obj in logging.Logger.manager.loggerDict.items():
         if name.startswith("src") and isinstance(logger_obj, logging.Logger):
@@ -186,11 +165,9 @@ def on_research_type_change(research_type: str) -> tuple[str, dict, dict]:
     icon = meta.get("icon", "help-circle")
     desc = meta.get("desc", "")
 
-    # Build description with MDI icon
-    icon_html = f'<span class="mdi mdi-{icon} research-icon"></span>'
+    icon_html = f'<span class="mdi mdi-{icon}" style="font-size:1.2rem;margin-right:0.5rem;"></span>'
     description_html = f"{icon_html} **{research_type}**: {desc}"
 
-    # Only Company Analysis is fully implemented (F2-F7 coming later)
     is_company_analysis = research_type == "Company Analysis"
 
     return (
@@ -200,48 +177,29 @@ def on_research_type_change(research_type: str) -> tuple[str, dict, dict]:
     )
 
 
-def validate_model_selection(model_name: str) -> str:
-    """Validate model availability."""
-    if "Temporarily Unavailable" in model_name:
-        gr.Warning("This model is temporarily unavailable. Please select another.")
-        return "Grok 4.1 Fast (Free)"
-    return model_name
-
-
-def clear_inputs() -> tuple[str, str, str, str, str, float]:
-    """Reset all inputs to defaults."""
-    return (
-        "Company Analysis",
-        "",
-        "",
-        "Comprehensive",
-        "Grok 4.1 Fast (Free)",
-        0.5,
-    )
-
-
 async def run_analysis(
     research_type_label: str,
     company_name: str,
     industry: str,
-    model_choice: str,
-    max_budget: float,
     research_depth: str,
+    model_choice: str,
 ):
-    """Execute market intelligence analysis with live logging."""
+    """Execute market intelligence analysis with progress updates."""
     if not company_name:
-        yield ("Please enter a company name", "", 0.0, "⚠️ Missing input", "")
+        yield ("", "Please enter a company name", "⚠️ Missing input")
         return
 
     research_type = RESEARCH_TYPE_OPTIONS.get(
         research_type_label, ResearchType.COMPANY_ANALYSIS
     )
-    model = MODEL_OPTIONS.get(model_choice, "x-ai/grok-4.1-fast:free")
+    model = MODEL_OPTIONS.get(model_choice, "x-ai/grok-3-fast:free")
 
-    log_queue, handler = setup_log_streaming()
-    attach_log_handler(handler)
+    # Default budget from env (not user-configurable)
+    max_budget = float(os.getenv("MAX_BUDGET", "2.0"))
 
-    logs: list[str] = []
+    tracker = ProgressTracker()
+    handler = attach_progress_tracker(tracker)
+    tracker.update("starting")
 
     try:
         workflow = MarketIntelligenceWorkflow(
@@ -259,49 +217,31 @@ async def run_analysis(
             )
         )
 
+        # Stream progress updates
         while not task.done():
-            while not log_queue.empty():
-                try:
-                    logs.append(log_queue.get_nowait())
-                except queue.Empty:
-                    break
-
-            yield (
-                "\n".join(logs),
-                "Analysis in progress...",
-                0.0,
-                "🔄 Running...",
-                "Generating summary...",
-            )
-            await asyncio.sleep(0.1)
+            status = tracker.get_status()
+            yield (status, "Generating report...", f"🔄 {status}")
+            await asyncio.sleep(0.5)
 
         result = await task
-        while not log_queue.empty():
-            try:
-                logs.append(log_queue.get_nowait())
-            except queue.Empty:
-                break
+        tracker.update("complete")
 
-        status = (
-            f"✅ Complete - ${result['total_cost']:.4f}"
-            if not result.get("errors")
-            else "❌ Failed"
+        final_status = (
+            "✅ Complete" if not result.get("errors") else "❌ Error occurred"
         )
 
         yield (
-            "\n".join(logs),
+            tracker.get_status(),
             result.get("full_report", "No report generated"),
-            result.get("total_cost", 0.0),
-            status,
-            result.get("executive_summary", ""),
+            final_status,
         )
 
     except Exception as e:
         logger.error(f"Analysis failed: {e}")
-        yield (f"Error: {e}", "", 0.0, f"❌ Failed: {e}", "")
+        yield ("", f"Error: {e}", "❌ Failed")
 
     finally:
-        detach_log_handler(handler)
+        detach_progress_tracker(handler)
 
 
 def download_report(report_content: str) -> str | None:
@@ -322,16 +262,19 @@ def download_report(report_content: str) -> str | None:
 
 
 def create_ui() -> gr.Blocks:
-    """Build the Gradio interface with MDI icons."""
+    """Build the Gradio interface — clean, enterprise-grade."""
 
     with gr.Blocks() as app:
-        # Header with MDI
+        # Header
         gr.HTML(f"""
         <link rel="stylesheet" href="{MDI_CDN}">
-        <div style="text-align: center; padding: 1rem 0;">
-            <h1><span class="mdi mdi-rocket-launch"></span> Agentic Market Research</h1>
-            <p style="font-size: 1.1rem; color: #666;">
-                80x faster, 2000x cheaper market intelligence — powered by LangGraph
+        <div style="text-align: center; padding: 1.5rem 0; border-bottom: 1px solid #eee;">
+            <h1 style="margin: 0; font-weight: 600;">
+                <span class="mdi mdi-chart-timeline-variant"></span>
+                Market Intelligence
+            </h1>
+            <p style="margin: 0.5rem 0 0; color: #666;">
+                Enterprise-grade competitive research in minutes
             </p>
         </div>
         """)
@@ -343,124 +286,94 @@ def create_ui() -> gr.Blocks:
             with gr.Column(scale=1):
                 # F1: Research Type Selection
                 gr.HTML("""
-                <h3><span class="mdi mdi-format-list-bulleted-type"></span> What do you need?</h3>
+                <h3 style="margin-bottom: 0.5rem;">
+                    <span class="mdi mdi-format-list-bulleted-type"></span>
+                    What do you need?
+                </h3>
                 """)
                 research_type_selector = gr.Radio(
                     choices=list(RESEARCH_TYPE_OPTIONS.keys()),
                     value="Company Analysis",
                     label="Research Type",
-                    info="Select the type of research to perform",
+                    show_label=False,
                 )
                 research_type_description = gr.Markdown(
-                    value='<span class="mdi mdi-domain research-icon"></span> **Company Analysis**: Deep dive on a single company — products, positioning, SWOT',
-                    elem_classes=["research-description"],
+                    value='<span class="mdi mdi-domain" style="font-size:1.2rem;margin-right:0.5rem;"></span> **Company Analysis**: Deep dive on a single company — products, positioning, SWOT'
                 )
-
-                gr.HTML("<hr style='margin: 1rem 0;'>")
 
                 # Dynamic Form: Company Analysis (F2)
                 with gr.Group(visible=True) as company_form:
-                    gr.HTML("""
-                    <h3><span class="mdi mdi-pencil"></span> Analysis Target</h3>
-                    """)
                     company_input = gr.Textbox(
-                        label="Company/Product Name",
+                        label="Company Name",
                         placeholder="e.g., Tesla, Notion, Stripe",
-                        info="The company or product to analyze",
                     )
                     industry_input = gr.Textbox(
                         label="Industry (optional)",
                         placeholder="e.g., Electric Vehicles, SaaS",
-                        info="Helps contextualize the analysis",
                     )
                     research_depth = gr.Radio(
                         choices=["Basic", "Comprehensive"],
                         value="Comprehensive",
                         label="Research Depth",
-                        info="Basic: faster. Comprehensive: deeper.",
+                        info="Basic: faster, key insights. Comprehensive: deeper analysis.",
                     )
 
-                # Placeholder for F3-F7 (Coming Soon)
+                # Placeholder for F3-F7
                 with gr.Group(visible=False) as coming_soon:
                     gr.HTML("""
-                    <div class="coming-soon">
-                        <h3><span class="mdi mdi-hammer-wrench"></span> Coming Soon</h3>
-                        <p>This research type is coming in a future update.</p>
-                        <p>For now, try <strong>Company Analysis</strong> to see the full workflow.</p>
+                    <div style="padding: 2rem; text-align: center; background: #f8f9fa; border-radius: 8px;">
+                        <span class="mdi mdi-hammer-wrench" style="font-size: 2rem; color: #666;"></span>
+                        <h3>Coming Soon</h3>
+                        <p style="color: #666;">This research type is under development.</p>
                     </div>
                     """)
 
-                # Advanced Settings
-                with gr.Accordion("⚙️ Advanced Settings", open=False):
+                # Advanced Settings (for power users testing models)
+                with gr.Accordion("Advanced Settings", open=False):
                     model_choice = gr.Dropdown(
                         choices=list(MODEL_OPTIONS.keys()),
-                        value="Grok 4.1 Fast (Free)",
+                        value="Grok 3 (Free)",
                         label="AI Model",
-                        info="Free models for testing, paid for production",
-                    )
-                    budget_slider = gr.Slider(
-                        minimum=0.1,
-                        maximum=2.0,
-                        value=0.5,
-                        step=0.1,
-                        label="Max Budget (USD)",
-                        info="Strict limit: $2.00 max",
+                        info="Test different models for quality comparison",
                     )
 
-                # Action Buttons
-                run_btn = gr.Button("🚀 Run Analysis", variant="primary", size="lg")
-                clear_btn = gr.Button("🗑️ Clear", variant="secondary")
+                # Run button
+                run_btn = gr.Button(
+                    "Generate Report",
+                    variant="primary",
+                    size="lg",
+                )
 
-                # Cost Display
-                gr.HTML("""
-                <h3><span class="mdi mdi-currency-usd"></span> Cost</h3>
-                """)
-                cost_display = gr.Number(label="Run Cost ($)", value=0, precision=4)
-                budget_status = gr.Textbox(
-                    label="Status", value="Ready", interactive=False
+                # Progress indicator
+                progress_status = gr.Textbox(
+                    label="Status",
+                    value="Ready",
+                    interactive=False,
+                    show_label=False,
                 )
 
             # ─────────────────────────────────────────────────────────────────
-            # Right Column: Results
+            # Right Column: Report Output
             # ─────────────────────────────────────────────────────────────────
             with gr.Column(scale=2):
-                with gr.Tabs():
-                    with gr.TabItem("🤖 Activity Log"):
-                        activity_log = gr.Textbox(
-                            label="Live Activity",
-                            lines=20,
-                            max_lines=30,
-                            interactive=False,
-                            show_label=False,
-                            autoscroll=True,
-                        )
+                gr.HTML("""
+                <h3 style="margin-bottom: 1rem;">
+                    <span class="mdi mdi-file-document-outline"></span>
+                    Report
+                </h3>
+                """)
 
-                    with gr.TabItem("📋 Executive Summary"):
-                        exec_summary = gr.Textbox(
-                            label="Summary",
-                            lines=30,
-                            max_lines=50,
-                            interactive=False,
-                            show_label=False,
-                        )
+                # Single clean output area
+                report_display = gr.Markdown(
+                    value="Your report will appear here after generation.",
+                    elem_id="report-output",
+                )
 
-                    with gr.TabItem("📊 Full Report"):
-                        report_display = gr.Markdown()
-
-                    with gr.TabItem("📥 Download"):
-                        gr.Markdown("### Download Report")
-                        download_btn = gr.DownloadButton("Download Report (Markdown)")
-
-        # Footer
-        gr.HTML("""
-        <div style="text-align: center; margin-top: 2rem; padding: 1rem; 
-                    border-top: 1px solid #eee; color: #666;">
-            <p><strong>Agentic Market Research</strong></p>
-            <p><span class="mdi mdi-graph"></span> LangGraph 
-               <span class="mdi mdi-api"></span> OpenRouter 
-               <span class="mdi mdi-magnify"></span> Tavily</p>
-        </div>
-        """)
+                # Download option
+                download_btn = gr.DownloadButton(
+                    "Download Report (.md)",
+                    visible=True,
+                )
 
         # ─────────────────────────────────────────────────────────────────────
         # Event Wiring
@@ -472,40 +385,19 @@ def create_ui() -> gr.Blocks:
             outputs=[research_type_description, company_form, coming_soon],
         )
 
-        model_choice.change(
-            fn=validate_model_selection,
-            inputs=[model_choice],
-            outputs=[model_choice],
-        )
-
-        clear_btn.click(
-            fn=clear_inputs,
-            outputs=[
-                research_type_selector,
-                company_input,
-                industry_input,
-                research_depth,
-                model_choice,
-                budget_slider,
-            ],
-        )
-
         run_btn.click(
             fn=run_analysis,
             inputs=[
                 research_type_selector,
                 company_input,
                 industry_input,
-                model_choice,
-                budget_slider,
                 research_depth,
+                model_choice,
             ],
             outputs=[
-                activity_log,
+                progress_status,
                 report_display,
-                cost_display,
-                budget_status,
-                exec_summary,
+                progress_status,
             ],
         )
 
