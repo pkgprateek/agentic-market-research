@@ -4,7 +4,7 @@ from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.sqlite.aio import AsyncSqliteSaver
 from langgraph.checkpoint.memory import MemorySaver
 
-from src.workflows.types import IntelligenceState
+from src.workflows.types import IntelligenceState, ResearchType
 from src.agents.researcher import ResearchAgent
 from src.agents.analyst import AnalysisAgent
 from src.agents.writer import WriterAgent
@@ -248,6 +248,7 @@ class MarketIntelligenceWorkflow:
         industry: str | None = None,
         thread_id: str | None = None,
         research_depth: str = "comprehensive",
+        research_type: ResearchType = ResearchType.COMPANY_ANALYSIS,
     ) -> dict:
         """
         Run the complete workflow.
@@ -264,6 +265,7 @@ class MarketIntelligenceWorkflow:
 
         # Initial state
         initial_state: IntelligenceState = {
+            "research_type": research_type,
             "company_name": company_name,
             "industry": industry,
             "research_depth": research_depth,

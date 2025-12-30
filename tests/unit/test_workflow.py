@@ -13,6 +13,7 @@ class TestIntelligenceState:
     def test_state_has_required_fields(self):
         """Verify state schema has all required fields."""
         required_fields = [
+            "research_type",
             "company_name",
             "industry",
             "research_data",

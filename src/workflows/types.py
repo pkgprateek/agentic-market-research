@@ -1,18 +1,37 @@
-"""State definitions for LangGraph workflow."""
+"""State definitions for LangGraph workflow.
 
-from typing import Annotated, Any, Dict, List, Literal, TypedDict, Union
+Uses Python 3.10+ type syntax for clarity and reduced imports.
+"""
+
+from enum import Enum
+from typing import Annotated, Any, Literal, TypedDict
 import operator
+
+
+class ResearchType(str, Enum):
+    """Types of market research the system can perform.
+
+    Each type maps to a specific workflow configuration (F2-F7).
+    Using str inheritance for JSON serialization compatibility.
+    """
+
+    COMPANY_ANALYSIS = "company_analysis"  # F2: Deep dive on single company
+    COMPETITIVE_COMPARISON = "competitive_comparison"  # F3: Side-by-side comparison
+    MARKET_LANDSCAPE = "market_landscape"  # F4: Full market overview
+    BATTLE_CARD = "battle_card"  # F5: Sales enablement doc
+    INVESTMENT_THESIS = "investment_thesis"  # F6: Due diligence report
+    CUSTOM_QUERY = "custom_query"  # F7: Free-form research
 
 
 class ResearchOutput(TypedDict):
     """Output structure for Research Agent."""
 
     company_name: str
-    industry: Union[str, None]
+    industry: str | None
     company_overview: str
     competitors: str
     market_trends: str
-    raw_sources: List[Any]
+    raw_sources: list[Any]
 
 
 class AnalysisOutput(TypedDict):
@@ -30,26 +49,26 @@ class ReportOutput(TypedDict):
 
     executive_summary: str
     full_report: str
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class IntelligenceState(TypedDict):
-    """
-    State for market intelligence workflow.
+    """State for market intelligence workflow.
 
     This state is passed between agents and persisted across checkpoints.
     """
 
-    # Input
+    # Input — What do you need?
+    research_type: ResearchType  # F1: The gateway field
     company_name: str
-    industry: Union[str, None]
+    industry: str | None
     research_depth: str  # "basic" or "comprehensive"
 
     # Research phase outputs
     research_data: ResearchOutput
     competitors: str  # Markdown string from analysis
     market_trends: str  # Markdown string from analysis
-    raw_sources: List[Any]
+    raw_sources: list[Any]
 
     # Analysis phase outputs
     swot: str
@@ -60,16 +79,16 @@ class IntelligenceState(TypedDict):
     # Writing phase outputs
     executive_summary: str
     full_report: str
-    report_metadata: Dict[str, Any]
+    report_metadata: dict[str, Any]
 
     # Workflow metadata
     current_agent: Literal["research", "analysis", "writing", "human_review", "done"]
     iteration: int
     total_cost: float
     total_tokens: int
-    errors: Annotated[List[str], operator.add]  # Accumulate errors across nodes
+    errors: Annotated[list[str], operator.add]  # Accumulate errors across nodes
 
     # Human-in-the-loop
-    human_feedback: Union[str, None]
+    human_feedback: str | None
     approved: bool
     revision_count: int
