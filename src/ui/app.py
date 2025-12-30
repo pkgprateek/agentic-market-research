@@ -324,11 +324,7 @@ def download_report(report_content: str) -> str | None:
 def create_ui() -> gr.Blocks:
     """Build the Gradio interface with MDI icons."""
 
-    with gr.Blocks(
-        title="Agentic Market Research",
-        theme=gr.themes.Soft(),
-        css=CUSTOM_CSS,
-    ) as app:
+    with gr.Blocks() as app:
         # Header with MDI
         gr.HTML(f"""
         <link rel="stylesheet" href="{MDI_CDN}">
