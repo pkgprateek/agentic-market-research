@@ -56,10 +56,11 @@ THEME_CSS = f"""
 * {{ box-sizing: border-box; }}
 
 .gradio-container {{
-    background: {COLORS["bg_primary"]} !important;
+    background: {COLORS["bg_secondary"]} !important;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     color: {COLORS["text_primary"]} !important;
     padding: 0 !important;
+    margin: 0 !important;
 }}
 
 .dark, .gr-form, .gr-box, .gr-panel {{
@@ -224,8 +225,8 @@ button.primary {{
     background: {COLORS["accent_muted"]};
     border: 2px solid {COLORS["accent"]};
     border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem 0;
+    padding: 1.25rem;
+    margin: 2rem 0;
 }}
 
 /* Export buttons */
@@ -253,8 +254,9 @@ button.primary {{
     background: {COLORS["warning_bg"]};
     border: 1px solid rgba(245, 158, 11, 0.3);
     border-radius: 10px;
-    padding: 1.25rem;
+    padding: 1rem;
     border-top: 3px solid {COLORS["warning"]};
+    margin: 1.5rem 0;
 }}
 
 /* Report container */
@@ -269,18 +271,59 @@ button.primary {{
     padding: 1.5rem;
 }}
 
-/* Report content */
+/* Report content - professional typography */
 .report-md h2 {{
     color: {COLORS["text_primary"]};
-    margin-top: 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 2rem 0 1rem 0;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid {COLORS["border"]};
+    letter-spacing: -0.01em;
+}}
+
+.report-md h3 {{
+    color: {COLORS["text_primary"]};
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.75rem 0;
+}}
+
+.report-md p {{
+    color: {COLORS["text_secondary"]};
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+}}
+
+.report-md strong {{
+    color: {COLORS["text_primary"]};
+    font-weight: 600;
+}}
+
+.report-md ul, .report-md ol {{
+    color: {COLORS["text_secondary"]};
+    font-size: 0.9rem;
+    line-height: 1.7;
+    padding-left: 1.5rem;
+    margin: 0.75rem 0;
+}}
+
+.report-md li {{
+    margin: 0.35rem 0;
+}}
+
+.report-md hr {{
+    border: none;
+    border-top: 1px solid {COLORS["border"]};
+    margin: 1.5rem 0;
 }}
 
 .report-md table {{
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
+    font-size: 0.85rem;
 }}
 
 .report-md th, .report-md td {{
@@ -292,8 +335,14 @@ button.primary {{
 .report-md th {{
     background: {COLORS["bg_elevated"]};
     color: {COLORS["text_muted"]};
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
+}}
+
+.report-md td {{
+    color: {COLORS["text_secondary"]};
 }}
 
 /* Focus Areas - uses details/summary for native collapse */
@@ -354,6 +403,33 @@ button.primary {{
     padding: 0 !important;
 }}
 
+/* Tab styling - active state visibility */
+.tab-nav {{
+    border-bottom: 1px solid {COLORS["border"]} !important;
+    margin-bottom: 1.5rem !important;
+}}
+
+.tab-nav button {{
+    background: transparent !important;
+    border: none !important;
+    color: {COLORS["text_muted"]} !important;
+    padding: 0.75rem 1rem !important;
+    font-weight: 500 !important;
+    border-radius: 8px 8px 0 0 !important;
+    transition: all 0.2s !important;
+}}
+
+.tab-nav button:hover {{
+    color: {COLORS["text_primary"]} !important;
+    background: {COLORS["bg_secondary"]} !important;
+}}
+
+.tab-nav button.selected {{
+    color: {COLORS["accent"]} !important;
+    background: {COLORS["accent_muted"]} !important;
+    border-bottom: 2px solid {COLORS["accent"]} !important;
+}}
+
 /* Scrollbar */
 ::-webkit-scrollbar {{ width: 8px; }}
 ::-webkit-scrollbar-track {{ background: {COLORS["bg_primary"]}; }}
@@ -393,6 +469,7 @@ MOCK_SOURCES = [
         "freshness": "fresh",
         "confidence": "high",
         "snippet": "Tesla delivered 1.8M vehicles in 2024, up 38% YoY.",
+        "description": "Official quarterly earnings release with financial metrics and delivery numbers",
     },
     {
         "title": "Global EV Market Analysis",
@@ -401,6 +478,7 @@ MOCK_SOURCES = [
         "freshness": "fresh",
         "confidence": "high",
         "snippet": "Global EV sales reached 14.1M units in 2024.",
+        "description": "Comprehensive market analysis covering global EV adoption trends",
     },
     {
         "title": "Tesla vs BYD Competition",
@@ -409,6 +487,7 @@ MOCK_SOURCES = [
         "freshness": "fresh",
         "confidence": "medium",
         "snippet": "BYD overtook Tesla in quarterly deliveries for the first time.",
+        "description": "Competitive analysis comparing delivery numbers and market positioning",
     },
 ]
 
@@ -477,10 +556,10 @@ def render_base() -> str:
 
 
 def render_header() -> str:
-    """Header with shadow effect like am1."""
+    """Header with transparent background - gradient comes from page."""
     return f"""
-    <div style="background: linear-gradient(180deg, {COLORS["bg_secondary"]} 0%, {COLORS["bg_primary"]} 100%); 
-                padding: 1.25rem 0; border-bottom: 1px solid {COLORS["border"]};
+    <div style="background: transparent; 
+                padding: 1.25rem 0;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -606,7 +685,7 @@ def render_input_section() -> str:
 def render_progress() -> str:
     """Progress bar."""
     return f"""
-    <div style="padding: 0 0 1.5rem;">
+    <div style="padding: 0 0 0.8rem;">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span class="mdi mdi-loading" style="color: {COLORS["accent"]}; font-size: 1rem; animation: spin 1s linear infinite;"></span>
@@ -639,7 +718,7 @@ def render_report_header() -> str:
 
 
 def render_gaps() -> str:
-    """Intelligence gaps."""
+    """Intelligence gaps - compact layout."""
     gaps = [
         (
             "Exact gross margin by product line",
@@ -653,20 +732,20 @@ def render_gaps() -> str:
     for topic, reason, impact in gaps:
         color = COLORS["error"] if impact == "HIGH" else COLORS["warning"]
         items += f"""
-        <div style="padding: 0.75rem 0; border-bottom: 1px solid rgba(245, 158, 11, 0.2);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                <span style="font-weight: 600; color: {COLORS["warning"]};">{topic}</span>
-                <span style="font-size: 0.7rem; color: {color}; font-weight: 600;">{impact} IMPACT</span>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.5rem 0; border-bottom: 1px solid rgba(245, 158, 11, 0.15);">
+            <div style="flex: 1; min-width: 0;">
+                <span style="font-weight: 600; color: {COLORS["text_primary"]}; font-size: 0.85rem;">{topic}</span>
+                <p style="margin: 0.25rem 0 0; font-size: 0.75rem; color: {COLORS["text_muted"]}; line-height: 1.3;">{reason}</p>
             </div>
-            <p style="margin: 0; font-size: 0.85rem; color: {COLORS["text_muted"]};">{reason}</p>
+            <span style="font-size: 0.65rem; color: {color}; font-weight: 600; white-space: nowrap;">{impact}</span>
         </div>
         """
 
     return f"""
     <div class="gaps-box">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-            <span class="mdi mdi-file-question" style="color: {COLORS["warning"]}; font-size: 1.25rem;"></span>
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["warning"]};">What We Couldn't Find</h3>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="mdi mdi-file-question" style="color: {COLORS["warning"]}; font-size: 1.1rem;"></span>
+            <h3 style="margin: 0; font-size: 0.9rem; color: {COLORS["warning"]};">What We Couldn't Find</h3>
         </div>
         {items}
     </div>
@@ -674,14 +753,15 @@ def render_gaps() -> str:
 
 
 def render_recommendations() -> str:
-    """Recommendations."""
+    """Recommendations - compact layout similar to sources."""
     recs = [
         (
             "URGENT",
             "error",
             "mdi-alert-octagon",
             "Monitor Q1 2025 earnings call",
-            "April 2025",
+            "Apr 2025",
+            "Review pricing strategy and Model 2 announcement timing",
         ),
         (
             "STRATEGIC",
@@ -689,32 +769,45 @@ def render_recommendations() -> str:
             "mdi-chess-queen",
             "Evaluate Model 2 timeline",
             "Q2 2025",
+            "Assess competitive positioning and market entry strategy",
         ),
     ]
 
     items = ""
-    for priority, color_key, icon, action, deadline in recs:
+    for priority, color_key, icon, action, deadline, description in recs:
         bg = COLORS[f"{color_key}_bg"]
         color = COLORS[color_key]
         items += f"""
-        <div class="card" style="margin-bottom: 0.75rem; border-left: 3px solid {color};">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span class="badge" style="background: {bg}; color: {color};">
-                    <span class="mdi {icon}"></span> {priority}
-                </span>
-                <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">
-                    <span class="mdi mdi-calendar-clock"></span> {deadline}
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem; margin-bottom: 0.5rem;
+                    background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]};
+                    border-left: 3px solid {color}; border-radius: 8px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.15rem; min-width: 24px;">
+                <span class="mdi mdi-pin" style="color: {COLORS["accent"]}; font-size: 0.9rem;"></span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.85rem;">{action}</div>
+                <div style="font-size: 0.75rem; color: {COLORS["text_muted"]}; margin-top: 0.25rem; line-height: 1.4;">
+                    {description}
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; padding-left: 0.5rem; min-width: 100px;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 0.7rem; color: {COLORS["text_muted"]}; font-weight: 500;">
+                        <span class="mdi mdi-calendar-clock" style="font-size: 0.75rem;"></span> {deadline}
+                    </span>
+                </div>
+                <span class="badge" style="background: {bg}; color: {color}; font-size: 0.65rem; padding: 0.15rem 0.4rem;">
+                    <span class="mdi {icon}" style="font-size: 0.7rem;"></span> {priority}
                 </span>
             </div>
-            <div style="font-weight: 600; color: {COLORS["text_primary"]};">{action}</div>
         </div>
         """
 
     return f"""
     <div style="margin: 1.5rem 0;">
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-            <span class="mdi mdi-pin" style="color: {COLORS["accent"]}; font-size: 1.25rem;"></span>
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]};">Recommended Actions</h3>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <span class="mdi mdi-pin" style="color: {COLORS["accent"]}; font-size: 1.1rem;"></span>
+            <h3 style="margin: 0; font-size: 0.9rem; color: {COLORS["text_primary"]};">Recommended Actions</h3>
         </div>
         {items}
     </div>
@@ -722,14 +815,14 @@ def render_recommendations() -> str:
 
 
 def render_hitl() -> str:
-    """HITL checkpoint."""
+    """HITL checkpoint - compact layout."""
     return f"""
     <div class="hitl-box">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-            <span class="mdi mdi-account-check" style="color: {COLORS["accent"]}; font-size: 1.25rem;"></span>
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]};">Human Review Checkpoint</h3>
+            <span class="mdi mdi-account-check" style="color: {COLORS["accent"]}; font-size: 1.1rem;"></span>
+            <h3 style="margin: 0; font-size: 0.9rem; color: {COLORS["text_primary"]};">Human Review Checkpoint</h3>
         </div>
-        <p style="margin: 0 0 1rem; color: {COLORS["text_secondary"]}; font-size: 0.9rem;">
+        <p style="margin: 0 0 0.75rem; color: {COLORS["text_secondary"]}; font-size: 0.85rem;">
             Review the analysis before finalizing.
         </p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -745,60 +838,123 @@ def render_hitl() -> str:
 
 
 def render_export() -> str:
-    """Export buttons."""
+    """Export buttons - dark theme compatible."""
     return f"""
     <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; padding: 1.5rem 0;">
-        <button class="export-btn" style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: white;">
-            <span class="mdi mdi-file-pdf-box"></span> Export PDF
+        <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
+            <span class="mdi mdi-file-pdf-box" style="color: {COLORS["error"]};"></span> Export PDF
         </button>
-        <button class="export-btn" style="background: linear-gradient(135deg, #16a34a, #15803d); color: white;">
-            <span class="mdi mdi-file-delimited"></span> Export CSV
+        <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
+            <span class="mdi mdi-file-delimited" style="color: {COLORS["success"]};"></span> Export CSV
         </button>
         <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
             <span class="mdi mdi-content-copy"></span> Copy
         </button>
-        <button class="export-btn" style="background: linear-gradient(135deg, {COLORS["info"]}, #2563eb); color: white;">
-            <span class="mdi mdi-share-variant"></span> Share
+        <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
+            <span class="mdi mdi-share-variant" style="color: {COLORS["info"]};"></span> Share
         </button>
     </div>
     """
 
 
+def render_full_report() -> str:
+    """Render the complete report inside a single card container.
+
+    Converts markdown to HTML so Executive Summary stays inside the card.
+    """
+    import markdown
+
+    # Convert markdown to HTML with table support
+    md = markdown.Markdown(extensions=["tables", "fenced_code"])
+    report_html = md.convert(MOCK_REPORT)
+
+    return f"""
+    <div class="report-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid {COLORS["border"]};">
+            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span>
+                Analysis Report
+            </h3>
+            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
+        </div>
+        <div class="report-md">
+            {report_html}
+        </div>
+    </div>
+    """
+
+
 def render_sources() -> str:
-    """Sources tab - compact single-line cards for scalability."""
+    """Sources tab - organized list with search/filter for scalability."""
     cards = ""
     for s in MOCK_SOURCES:
-        conf_color = (
-            COLORS["success"] if s["confidence"] == "high" else COLORS["warning"]
-        )
+        conf_key = "success" if s["confidence"] == "high" else "warning"
+        conf_color = COLORS[conf_key]
+        conf_bg = COLORS[f"{conf_key}_bg"]
         conf_label = "High" if s["confidence"] == "high" else "Medium"
+        freshness_icon = "mdi-check" if s["freshness"] == "fresh" else "mdi-alert"
 
         cards += f"""
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; 
-                    border-bottom: 1px solid {COLORS["border"]};">
-            <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 0;">
-                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]}; font-size: 1rem;"></span>
-                <div style="flex: 1; min-width: 0;">
-                    <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem; 
-                                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{s["title"]}</div>
-                    <div style="font-size: 0.75rem; color: {COLORS["text_muted"]};">{s["source"]} • {s["date"]}</div>
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem;
+                    border-bottom: 1px solid {COLORS["border"]}; transition: background 0.15s;"
+                    onmouseover="this.style.background='{COLORS["bg_elevated"]}'"
+                    onmouseout="this.style.background='transparent'">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.15rem; min-width: 24px;">
+                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]}; font-size: 0.9rem;"></span>
+                <span class="mdi {freshness_icon}" style="color: {conf_color}; font-size: 0.65rem;"></span>
+            </div>
+            <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.85rem;
+                            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{s["title"]}</div>
+                <div style="font-size: 0.75rem; color: {COLORS["text_muted"]}; margin-top: 0.25rem; line-height: 1.4;">
+                    {s.get("description", "Source description placeholder")}
                 </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; padding-left: 1rem;">
-                <span style="font-size: 0.7rem; font-weight: 600; color: {conf_color};">{conf_label}</span>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; padding-left: 0.5rem; min-width: 100px;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 0.7rem; color: {COLORS["text_muted"]};">{s["source"]}</span>
+                    <span style="font-size: 0.65rem; color: {COLORS["border"]};">•</span>
+                    <span style="font-size: 0.7rem; color: {COLORS["text_muted"]};">{s["date"]}</span>
+                </div>
+                <span style="font-size: 0.65rem; font-weight: 600; color: {conf_color}; background: {conf_bg};
+                           padding: 0.15rem 0.4rem; border-radius: 4px;">{conf_label}</span>
             </div>
         </div>
         """
 
     return f"""
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-        <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+        <h3 style="margin: 0; font-size: 0.95rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
             <span class="mdi mdi-text-box-multiple" style="color: {COLORS["accent"]};"></span>
             Sources ({len(MOCK_SOURCES)})
         </h3>
+        <div style="display: flex; gap: 0.5rem;">
+            <button style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]};
+                           color: {COLORS["text_muted"]}; font-size: 0.75rem; padding: 0.35rem 0.6rem;
+                           border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;">
+                <span class="mdi mdi-magnify" style="font-size: 0.8rem;"></span> Search
+            </button>
+            <button style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]};
+                           color: {COLORS["text_muted"]}; font-size: 0.75rem; padding: 0.35rem 0.6rem;
+                           border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;">
+                <span class="mdi mdi-filter" style="font-size: 0.8rem;"></span> Filter
+            </button>
+        </div>
     </div>
-    <div style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; border-radius: 10px; overflow: hidden;">
+    <div style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; border-radius: 10px;
+                overflow-y: auto; max-height: 500px;">
         {cards}
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; padding: 0.5rem 0;">
+        <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">Showing {len(MOCK_SOURCES)} sources</span>
+        <div style="display: flex; gap: 0.35rem;">
+            <button style="background: transparent; border: 1px solid {COLORS["border"]};
+                           color: {COLORS["text_muted"]}; font-size: 0.7rem; padding: 0.25rem 0.5rem;
+                           border-radius: 4px; cursor: pointer;">Previous</button>
+            <button style="background: transparent; border: 1px solid {COLORS["border"]};
+                           color: {COLORS["text_muted"]}; font-size: 0.7rem; padding: 0.25rem 0.5rem;
+                           border-radius: 4px; cursor: pointer;">Next</button>
+        </div>
     </div>
     """
 
@@ -840,25 +996,17 @@ def create_mock_ui() -> gr.Blocks:
         # Progress
         gr.HTML(render_progress())
 
+        # Spacer before tabs - reduced to 30% of original
+        gr.HTML(f"<div style='padding: 0.45rem 0;'></div>")
+
         # Tabs - wrapped in container for alignment
         gr.HTML(f"<div style='{CONTAINER}'>")
         with gr.Tabs():
             with gr.TabItem("Report"):
-                # Report box with header integrated
-                gr.HTML(f"""
-                    <div class="report-box">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid {COLORS["border"]};">
-                            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span>
-                                Analysis Report
-                            </h3>
-                            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
-                        </div>
-                """)
-                gr.Markdown(MOCK_REPORT, elem_classes=["report-md"])
-                gr.HTML("</div>")
+                # Report box with all content inside a single HTML block
+                gr.HTML(render_full_report())
 
-                # Additional sections
+                # Additional sections with proper spacing
                 gr.HTML(render_gaps())
                 gr.HTML(render_recommendations())
                 gr.HTML(render_hitl())
