@@ -765,43 +765,39 @@ def render_export() -> str:
 
 
 def render_sources() -> str:
-    """Sources tab."""
+    """Sources tab - compact single-line cards for scalability."""
     cards = ""
     for s in MOCK_SOURCES:
-        fresh = '<span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Fresh</span>'
-        conf = (
-            '<span class="badge badge-success"><span class="mdi mdi-shield-check"></span> High</span>'
-            if s["confidence"] == "high"
-            else '<span class="badge badge-warning"><span class="mdi mdi-shield-alert"></span> Medium</span>'
+        conf_color = (
+            COLORS["success"] if s["confidence"] == "high" else COLORS["warning"]
         )
+        conf_label = "High" if s["confidence"] == "high" else "Medium"
 
         cards += f"""
-        <div class="source-card">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <div>
-                    <div style="font-weight: 600; color: {COLORS["text_primary"]};">{s["title"]}</div>
-                    <div style="font-size: 0.8rem; color: {COLORS["text_muted"]};">{s["source"]} • {s["date"]}</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; 
+                    border-bottom: 1px solid {COLORS["border"]};">
+            <div style="display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 0;">
+                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]}; font-size: 1rem;"></span>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem; 
+                                white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{s["title"]}</div>
+                    <div style="font-size: 0.75rem; color: {COLORS["text_muted"]};">{s["source"]} • {s["date"]}</div>
                 </div>
-                <div style="display: flex; gap: 0.5rem;">{fresh}{conf}</div>
             </div>
-            <div style="background: {COLORS["bg_primary"]}; border-left: 2px solid {COLORS["accent"]}; 
-                        padding: 0.5rem 0.75rem; font-size: 0.85rem; color: {COLORS["text_secondary"]}; font-style: italic;">
-                "{s["snippet"]}"
+            <div style="display: flex; align-items: center; gap: 0.5rem; padding-left: 1rem;">
+                <span style="font-size: 0.7rem; font-weight: 600; color: {conf_color};">{conf_label}</span>
             </div>
         </div>
         """
 
     return f"""
-    <div style="{CONTAINER}">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="mdi mdi-text-box-multiple" style="color: {COLORS["accent"]};"></span>
-                Sources ({len(MOCK_SOURCES)})
-            </h3>
-            <button class="btn-sm" style="border-style: dashed;">
-                <span class="mdi mdi-plus"></span> Add Source
-            </button>
-        </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+            <span class="mdi mdi-text-box-multiple" style="color: {COLORS["accent"]};"></span>
+            Sources ({len(MOCK_SOURCES)})
+        </h3>
+    </div>
+    <div style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; border-radius: 10px; overflow: hidden;">
         {cards}
     </div>
     """
