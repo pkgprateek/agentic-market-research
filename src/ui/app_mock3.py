@@ -1,10 +1,12 @@
 """Enterprise-Grade UI Mock v3 — Best of Both Designs.
 
-Fixes:
-1. Report container properly wrapped
-2. Space after progress bar before tabs
-3. Consistent button sizes (height/padding)
-4. Research type cards like am1 (3 per row, 2 rows, with icons)
+Fixes in this version:
+1. Added shadows/effects to header and research cards (like am1)
+2. Removed History button (not in CLAUDE.md)
+3. Added "Generate Report" button
+4. Added Focus Areas accordion from CLAUDE.md F2
+5. Fixed report container alignment
+6. Fixed tabs alignment with rest of app
 
 Run: python -m src.ui.app_mock3
 Port: 7864
@@ -69,17 +71,17 @@ h1, h2, h3, h4 {{
     font-weight: 600 !important;
 }}
 
-/* Buttons - Consistent sizing */
+/* Buttons */
 button.primary {{
     background: linear-gradient(135deg, {COLORS["accent"]} 0%, #0d9488 100%) !important;
     border: none !important;
     color: white !important;
     font-weight: 600 !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
 }}
 
-/* Small buttons - consistent height */
+/* Small buttons */
 .btn-sm {{
     display: inline-flex;
     align-items: center;
@@ -95,7 +97,6 @@ button.primary {{
     font-weight: 500;
     cursor: pointer;
     transition: all 0.15s;
-    white-space: nowrap;
 }}
 
 .btn-sm:hover {{
@@ -103,49 +104,47 @@ button.primary {{
     color: {COLORS["text_primary"]};
 }}
 
-/* Research Type Cards (am1 style - 3 per row) */
+/* Research Type Cards with shadow (like am1) */
 .research-card {{
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
     background: {COLORS["bg_secondary"]};
     border: 1px solid {COLORS["border"]};
-    border-radius: 10px;
-    padding: 0.875rem 1rem;
+    border-radius: 12px;
+    padding: 1rem;
     cursor: pointer;
-    transition: all 0.15s;
-    min-width: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }}
 
 .research-card:hover {{
     border-color: {COLORS["accent"]};
     background: {COLORS["bg_elevated"]};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }}
 
 .research-card.active {{
     border-color: {COLORS["accent"]};
     background: {COLORS["accent_muted"]};
+    box-shadow: 0 0 0 3px {COLORS["accent_muted"]}, 0 8px 24px rgba(20, 184, 166, 0.2);
 }}
 
 .research-card-icon {{
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
     background: {COLORS["accent_muted"]};
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
 }}
 
 .research-card-icon .mdi {{
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     color: {COLORS["accent"]};
-}}
-
-.research-card-text {{
-    flex: 1;
-    min-width: 0;
 }}
 
 .research-card-title {{
@@ -189,7 +188,6 @@ button.primary {{
 .progress-fill {{
     height: 100%;
     background: linear-gradient(90deg, {COLORS["accent"]}, {COLORS["accent_hover"]});
-    border-radius: 2px;
 }}
 
 /* Consensus */
@@ -203,7 +201,6 @@ button.primary {{
 .consensus-fill {{
     height: 100%;
     background: linear-gradient(90deg, {COLORS["success"]}, #059669);
-    border-radius: 4px;
 }}
 
 /* Badges */
@@ -231,7 +228,7 @@ button.primary {{
     margin: 1.5rem 0;
 }}
 
-/* Export buttons - consistent size */
+/* Export buttons */
 .export-btn {{
     display: inline-flex;
     align-items: center;
@@ -251,7 +248,7 @@ button.primary {{
     transform: translateY(-1px);
 }}
 
-/* Gaps Section */
+/* Gaps */
 .gaps-box {{
     background: {COLORS["warning_bg"]};
     border: 1px solid rgba(245, 158, 11, 0.3);
@@ -261,7 +258,11 @@ button.primary {{
 }}
 
 /* Report container */
-.report-container {{
+.report-wrapper {{
+    {CONTAINER}
+}}
+
+.report-box {{
     background: {COLORS["bg_card"]};
     border: 1px solid {COLORS["border"]};
     border-radius: 12px;
@@ -295,6 +296,50 @@ button.primary {{
     text-transform: uppercase;
 }}
 
+/* Focus Areas accordion */
+.focus-areas {{
+    background: {COLORS["bg_secondary"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 10px;
+    margin-top: 1rem;
+}}
+
+.focus-areas-header {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+}}
+
+.focus-areas-header:hover {{
+    background: {COLORS["bg_elevated"]};
+    border-radius: 10px;
+}}
+
+.focus-checkbox {{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}}
+
+.focus-checkbox:hover {{
+    background: {COLORS["bg_elevated"]};
+}}
+
+.focus-checkbox input {{
+    width: 16px;
+    height: 16px;
+    accent-color: {COLORS["accent"]};
+}}
+
+/* Tabs alignment fix */
+.gr-tabs {{
+    {CONTAINER}
+}}
+
 /* Scrollbar */
 ::-webkit-scrollbar {{ width: 8px; }}
 ::-webkit-scrollbar-track {{ background: {COLORS["bg_primary"]}; }}
@@ -317,6 +362,15 @@ RESEARCH_TYPES = [
     ("Custom Query", "help-circle", "Free-form research"),
 ]
 
+# From CLAUDE.md F2
+FOCUS_AREAS = [
+    ("Products & Services", "Product offerings, features, and service portfolio", True),
+    ("Pricing", "Pricing models, tiers, and competitive positioning", False),
+    ("Leadership", "Executive team, board, and organizational structure", False),
+    ("Financials", "Revenue, margins, funding, and financial health", True),
+    ("Market Position", "Market share, competitive landscape, and positioning", True),
+]
+
 MOCK_SOURCES = [
     {
         "title": "Tesla Q4 2024 Earnings Report",
@@ -324,7 +378,7 @@ MOCK_SOURCES = [
         "date": "Jan 2025",
         "freshness": "fresh",
         "confidence": "high",
-        "snippet": "Tesla delivered 1.8M vehicles in 2024, up 38% YoY. Automotive gross margin at 16.3%.",
+        "snippet": "Tesla delivered 1.8M vehicles in 2024, up 38% YoY.",
     },
     {
         "title": "Global EV Market Analysis",
@@ -332,7 +386,7 @@ MOCK_SOURCES = [
         "date": "Dec 2024",
         "freshness": "fresh",
         "confidence": "high",
-        "snippet": "Global EV sales reached 14.1M units in 2024, representing 18% of total auto sales.",
+        "snippet": "Global EV sales reached 14.1M units in 2024.",
     },
     {
         "title": "Tesla vs BYD Competition",
@@ -340,14 +394,14 @@ MOCK_SOURCES = [
         "date": "Dec 2024",
         "freshness": "fresh",
         "confidence": "medium",
-        "snippet": "BYD overtook Tesla in quarterly deliveries for the first time in Q4 2024.",
+        "snippet": "BYD overtook Tesla in quarterly deliveries for the first time.",
     },
 ]
 
 MOCK_REPORT = """
 ## Executive Summary
 
-Tesla maintains leadership in US EV market (55% share) but faces increasing pressure from BYD and Chinese competitors. Key strengths include vertical integration and Supercharger network.
+Tesla maintains leadership in US EV market (55% share) but faces increasing pressure from BYD and Chinese competitors.
 
 **Recommendation:** Monitor Q1 2025 earnings for pricing strategy and Model 2 timeline.
 
@@ -360,7 +414,6 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
 | Revenue (2024) | $96.8B | ↗ +38% | <span class="badge badge-success">High</span> |
 | Market Cap | $850B | ↘ -15% YTD | <span class="badge badge-success">High</span> |
 | US EV Share | 55% | ↘ -10 pts | <span class="badge badge-warning">Medium</span> |
-| Global Deliveries | 1.8M units | ↗ +38% | <span class="badge badge-success">High</span> |
 
 ---
 
@@ -374,7 +427,6 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
     <div class="consensus-bar">
         <div class="consensus-fill" style="width: 85%;"></div>
     </div>
-    <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: #71717a;">17 of 20 sources identify Tesla as market leader in US EV segment</p>
 </div>
 
 ---
@@ -383,20 +435,17 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
 
 **Strengths**
 - Brand recognition and customer loyalty <span class="badge badge-success">High</span>
-- Vertical integration (manufacturing to retail) <span class="badge badge-success">High</span>
+- Vertical integration <span class="badge badge-success">High</span>
 - Supercharger network (55,000+ stalls) <span class="badge badge-success">High</span>
 
 **Weaknesses**
 - Quality control inconsistencies <span class="badge badge-warning">Medium</span>
-- CEO-dependent brand perception <span class="badge badge-success">High</span>
 
 **Opportunities**
 - FSD licensing revenue potential <span class="badge badge-warning">Medium</span>
-- Energy storage market growth (25% CAGR) <span class="badge badge-success">High</span>
 
 **Threats**
 - BYD and Chinese EV competition <span class="badge badge-success">High</span>
-- Legacy automaker electrification push <span class="badge badge-success">High</span>
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -405,7 +454,7 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
 
 
 def render_base() -> str:
-    """Base styles and fonts."""
+    """Base styles."""
     return f"""
     <link rel="stylesheet" href="{MDI_CDN}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -414,16 +463,27 @@ def render_base() -> str:
 
 
 def render_header() -> str:
-    """Header."""
+    """Header with shadow effect like am1."""
     return f"""
-    <div style="padding: 1rem 0; border-bottom: 1px solid {COLORS["border"]};">
+    <div style="background: linear-gradient(180deg, {COLORS["bg_secondary"]} 0%, {COLORS["bg_primary"]} 100%); 
+                padding: 1.25rem 0; border-bottom: 1px solid {COLORS["border"]};
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div style="background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); width: 40px; height: 40px; 
-                            border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                    <span class="mdi mdi-chart-timeline-variant" style="color: white; font-size: 1.25rem;"></span>
+                <div style="background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); 
+                            width: 44px; height: 44px; border-radius: 12px; 
+                            display: flex; align-items: center; justify-content: center;
+                            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);">
+                    <span class="mdi mdi-chart-timeline-variant-shimmer" style="color: white; font-size: 1.5rem;"></span>
                 </div>
-                <h1 style="margin: 0; font-size: 1.25rem; color: {COLORS["text_primary"]};">Market Intelligence</h1>
+                <div>
+                    <h1 style="margin: 0; font-size: 1.35rem; color: {COLORS["text_primary"]}; font-weight: 700;">
+                        Market Intelligence
+                    </h1>
+                    <p style="margin: 0; font-size: 0.8rem; color: {COLORS["text_muted"]};">
+                        Enterprise-grade competitive research
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -431,7 +491,7 @@ def render_header() -> str:
 
 
 def render_research_types() -> str:
-    """Research type cards (am1 style - 3 per row, 2 rows)."""
+    """Research type cards (3x2 grid with shadows)."""
     cards = ""
     for i, (name, icon, desc) in enumerate(RESEARCH_TYPES):
         active = "active" if i == 0 else ""
@@ -440,7 +500,7 @@ def render_research_types() -> str:
             <div class="research-card-icon">
                 <span class="mdi mdi-{icon}"></span>
             </div>
-            <div class="research-card-text">
+            <div>
                 <div class="research-card-title">{name}</div>
                 <div class="research-card-desc">{desc}</div>
             </div>
@@ -448,8 +508,12 @@ def render_research_types() -> str:
         """
 
     return f"""
-    <div style="padding: 1.25rem 0;">
+    <div style="padding: 1.5rem 0;">
         <div style="{CONTAINER}">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="mdi mdi-format-list-bulleted-type" style="color: {COLORS["accent"]}; font-size: 1.25rem;"></span>
+                <span style="font-weight: 600; color: {COLORS["text_primary"]};">What do you need?</span>
+            </div>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
                 {cards}
             </div>
@@ -459,31 +523,76 @@ def render_research_types() -> str:
 
 
 def render_input_section() -> str:
-    """Input section with consistent button sizes."""
+    """Input with Focus Areas accordion."""
+    # Build focus area checkboxes
+    focus_items = ""
+    for name, desc, checked in FOCUS_AREAS:
+        checked_attr = "checked" if checked else ""
+        focus_items += f"""
+        <label class="focus-checkbox">
+            <input type="checkbox" {checked_attr}>
+            <div>
+                <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">{name}</div>
+                <div style="font-size: 0.75rem; color: {COLORS["text_muted"]};">{desc}</div>
+            </div>
+        </label>
+        """
+
     return f"""
-    <div style="padding: 0.75rem 0 1rem;">
+    <div style="padding: 0 0 1.5rem;">
         <div style="{CONTAINER}">
-            <div style="position: relative; margin-bottom: 0.75rem;">
-                <input type="text" value="Tesla" placeholder="Research a company, market, or topic..."
-                       style="width: 100%; height: 48px; padding: 0 1rem 0 2.75rem; font-size: 1rem; 
-                              background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
-                              border-radius: 10px; color: {COLORS["text_primary"]};">
-                <span class="mdi mdi-magnify" style="position: absolute; left: 1rem; top: 50%; 
-                      transform: translateY(-50%); color: {COLORS["text_muted"]}; font-size: 1.25rem;"></span>
+            <!-- Company Input -->
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: {COLORS["text_secondary"]}; font-weight: 500;">
+                    Company Name
+                </label>
+                <div style="position: relative;">
+                    <input type="text" value="Tesla" placeholder="Enter company name..."
+                           style="width: 100%; height: 48px; padding: 0 1rem 0 2.75rem; font-size: 1rem; 
+                                  background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
+                                  border-radius: 10px; color: {COLORS["text_primary"]};">
+                    <span class="mdi mdi-magnify" style="position: absolute; left: 1rem; top: 50%; 
+                          transform: translateY(-50%); color: {COLORS["text_muted"]}; font-size: 1.25rem;"></span>
+                </div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
+            
+            <!-- Focus Areas Accordion -->
+            <div class="focus-areas">
+                <div class="focus-areas-header">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="mdi mdi-tune" style="color: {COLORS["accent"]};"></span>
+                        <span style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">Focus Areas</span>
+                        <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">(3 selected)</span>
+                    </div>
+                    <span class="mdi mdi-chevron-down" style="color: {COLORS["text_muted"]};"></span>
+                </div>
+                <div style="border-top: 1px solid {COLORS["border"]}; padding: 0.5rem 0;">
+                    {focus_items}
+                </div>
+            </div>
+            
+            <!-- Settings Button -->
+            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
                 <button class="btn-sm"><span class="mdi mdi-cog"></span> Settings</button>
-                <button class="btn-sm"><span class="mdi mdi-history"></span> History</button>
             </div>
+            
+            <!-- Generate Button -->
+            <button style="width: 100%; height: 48px; margin-top: 1rem; 
+                           background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); 
+                           border: none; border-radius: 10px; color: white; font-weight: 600; font-size: 1rem;
+                           cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+                           box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); transition: all 0.2s;">
+                <span class="mdi mdi-play"></span> Generate Report
+            </button>
         </div>
     </div>
     """
 
 
 def render_progress() -> str:
-    """Progress bar with space after."""
+    """Progress bar."""
     return f"""
-    <div style="padding: 0.75rem 0 1.5rem;">
+    <div style="padding: 0 0 1.5rem;">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span class="mdi mdi-loading" style="color: {COLORS["accent"]}; font-size: 1rem; animation: spin 1s linear infinite;"></span>
@@ -501,7 +610,7 @@ def render_progress() -> str:
 
 
 def render_report_header() -> str:
-    """Report card header."""
+    """Report header inside container."""
     return f"""
     <div style="{CONTAINER}">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -524,7 +633,6 @@ def render_gaps() -> str:
             "HIGH",
         ),
         ("FSD take rate", "Conflicting reports (10-30%)", "HIGH"),
-        ("Cybertruck production costs", "Internal data only", "MEDIUM"),
     ]
 
     items = ""
@@ -568,7 +676,6 @@ def render_recommendations() -> str:
             "Evaluate Model 2 timeline",
             "Q2 2025",
         ),
-        ("MONITOR", "success", "mdi-eye", "Track BYD Europe expansion", "Ongoing"),
     ]
 
     items = ""
@@ -609,7 +716,7 @@ def render_hitl() -> str:
             <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]};">Human Review Checkpoint</h3>
         </div>
         <p style="margin: 0 0 1rem; color: {COLORS["text_secondary"]}; font-size: 0.9rem;">
-            Review the analysis before finalizing. You can edit insights, add context, or request revisions.
+            Review the analysis before finalizing.
         </p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <button class="export-btn" style="background: linear-gradient(135deg, {COLORS["success"]}, #059669); color: white;">
@@ -617,9 +724,6 @@ def render_hitl() -> str:
             </button>
             <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
                 <span class="mdi mdi-pencil"></span> Request Revisions
-            </button>
-            <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
-                <span class="mdi mdi-download"></span> Download Draft
             </button>
         </div>
     </div>
@@ -637,27 +741,20 @@ def render_export() -> str:
             <span class="mdi mdi-file-delimited"></span> Export CSV
         </button>
         <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
-            <span class="mdi mdi-content-copy"></span> Copy Report
+            <span class="mdi mdi-content-copy"></span> Copy
         </button>
         <button class="export-btn" style="background: linear-gradient(135deg, {COLORS["info"]}, #2563eb); color: white;">
             <span class="mdi mdi-share-variant"></span> Share
-        </button>
-        <button class="export-btn" style="background: {COLORS["bg_elevated"]}; border: 1px solid {COLORS["border"]}; color: {COLORS["text_primary"]};">
-            <span class="mdi mdi-bookmark"></span> Save
         </button>
     </div>
     """
 
 
 def render_sources() -> str:
-    """Sources tab content."""
+    """Sources tab."""
     cards = ""
     for s in MOCK_SOURCES:
-        fresh = (
-            '<span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Fresh</span>'
-            if s["freshness"] == "fresh"
-            else '<span class="badge badge-warning"><span class="mdi mdi-clock"></span> Recent</span>'
-        )
+        fresh = '<span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Fresh</span>'
         conf = (
             '<span class="badge badge-success"><span class="mdi mdi-shield-check"></span> High</span>'
             if s["confidence"] == "high"
@@ -701,7 +798,6 @@ def render_footer() -> str:
     return f"""
     <div style="text-align: center; padding: 1.5rem 0; border-top: 1px solid {COLORS["border"]}; margin-top: 1rem;">
         <p style="margin: 0; font-size: 0.85rem; color: {COLORS["text_muted"]};">
-            Built for speed and clarity •
             <span class="mdi mdi-graph" style="color: {COLORS["accent"]};"></span> LangGraph •
             <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> OpenRouter •
             <span class="mdi mdi-magnify" style="color: {COLORS["accent"]};"></span> Tavily
@@ -716,39 +812,39 @@ def render_footer() -> str:
 
 
 def create_mock_ui() -> gr.Blocks:
-    """Create UI with all fixes applied."""
+    """Create UI with all fixes."""
 
     with gr.Blocks() as app:
-        # Base styles
+        # Base
         gr.HTML(render_base())
 
-        # Header
+        # Header with shadow
         gr.HTML(render_header())
 
-        # Research Types (am1 style - 3x2 grid)
+        # Research Types (3x2 grid with shadows)
         gr.HTML(render_research_types())
 
-        # Input Section
+        # Input with Focus Areas and Generate button
         gr.HTML(render_input_section())
 
-        # Progress (with space after)
+        # Progress
         gr.HTML(render_progress())
 
-        # Tabs for Report/Sources
+        # Tabs - aligned with container
         with gr.Tabs():
             with gr.TabItem("Report"):
                 # Report header
                 gr.HTML(render_report_header())
 
-                # Report content in proper container
+                # Report in proper container box
                 gr.HTML(f"""
                 <div style="{CONTAINER}">
-                    <div class="report-container">
+                    <div class="report-box">
                 """)
                 gr.Markdown(MOCK_REPORT, elem_classes=["report-md"])
                 gr.HTML("</div></div>")
 
-                # Gaps, Recommendations, HITL
+                # Additional sections in container
                 gr.HTML(f"<div style='{CONTAINER}'>{render_gaps()}</div>")
                 gr.HTML(f"<div style='{CONTAINER}'>{render_recommendations()}</div>")
                 gr.HTML(f"<div style='{CONTAINER}'>{render_hitl()}</div>")
@@ -756,7 +852,7 @@ def create_mock_ui() -> gr.Blocks:
             with gr.TabItem("Sources"):
                 gr.HTML(render_sources())
 
-        # Export buttons
+        # Export
         gr.HTML(render_export())
 
         # Footer
