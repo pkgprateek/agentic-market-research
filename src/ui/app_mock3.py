@@ -296,7 +296,7 @@ button.primary {{
     text-transform: uppercase;
 }}
 
-/* Focus Areas accordion */
+/* Focus Areas - uses details/summary for native collapse */
 .focus-areas {{
     background: {COLORS["bg_secondary"]};
     border: 1px solid {COLORS["border"]};
@@ -304,17 +304,27 @@ button.primary {{
     margin-top: 1rem;
 }}
 
-.focus-areas-header {{
+.focus-areas summary {{
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
     cursor: pointer;
+    list-style: none;
 }}
 
-.focus-areas-header:hover {{
+.focus-areas summary::-webkit-details-marker {{
+    display: none;
+}}
+
+.focus-areas summary:hover {{
     background: {COLORS["bg_elevated"]};
     border-radius: 10px;
+}}
+
+.focus-areas[open] summary {{
+    border-bottom: 1px solid {COLORS["border"]};
+    border-radius: 10px 10px 0 0;
 }}
 
 .focus-checkbox {{
@@ -335,9 +345,13 @@ button.primary {{
     accent-color: {COLORS["accent"]};
 }}
 
-/* Tabs alignment fix */
-.gr-tabs {{
+/* Tabs alignment - wrap content in container */
+.tabs {{
     {CONTAINER}
+}}
+
+.tabitem {{
+    padding: 0 !important;
 }}
 
 /* Scrollbar */
@@ -556,24 +570,24 @@ def render_input_section() -> str:
                 </div>
             </div>
             
-            <!-- Focus Areas Accordion -->
-            <div class="focus-areas">
-                <div class="focus-areas-header">
+            <!-- Focus Areas Accordion (collapsed by default) -->
+            <details class="focus-areas">
+                <summary>
                     <div style="display: flex; align-items: center; gap: 0.5rem;">
                         <span class="mdi mdi-tune" style="color: {COLORS["accent"]};"></span>
                         <span style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">Focus Areas</span>
-                        <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">(3 selected)</span>
+                        <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">({sum(1 for _, _, c in FOCUS_AREAS if c)} selected)</span>
                     </div>
                     <span class="mdi mdi-chevron-down" style="color: {COLORS["text_muted"]};"></span>
-                </div>
-                <div style="border-top: 1px solid {COLORS["border"]}; padding: 0.5rem 0;">
+                </summary>
+                <div style="padding: 0.5rem 0;">
                     {focus_items}
                 </div>
-            </div>
+            </details>
             
-            <!-- Settings Button -->
+            <!-- Advanced Settings Button -->
             <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                <button class="btn-sm"><span class="mdi mdi-cog"></span> Settings</button>
+                <button class="btn-sm"><span class="mdi mdi-cog"></span> Advanced Settings</button>
             </div>
             
             <!-- Generate Button -->
@@ -830,27 +844,32 @@ def create_mock_ui() -> gr.Blocks:
         # Progress
         gr.HTML(render_progress())
 
-        # Tabs - aligned with container
+        # Tabs - wrapped in container for alignment
+        gr.HTML(f"<div style='{CONTAINER}'>")
         with gr.Tabs():
             with gr.TabItem("Report"):
-                # Report header
-                gr.HTML(render_report_header())
-
-                # Report in proper container box
+                # Report box with header integrated
                 gr.HTML(f"""
-                <div style="{CONTAINER}">
                     <div class="report-box">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid {COLORS["border"]};">
+                            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span>
+                                Analysis Report
+                            </h3>
+                            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
+                        </div>
                 """)
                 gr.Markdown(MOCK_REPORT, elem_classes=["report-md"])
-                gr.HTML("</div></div>")
+                gr.HTML("</div>")
 
-                # Additional sections in container
-                gr.HTML(f"<div style='{CONTAINER}'>{render_gaps()}</div>")
-                gr.HTML(f"<div style='{CONTAINER}'>{render_recommendations()}</div>")
-                gr.HTML(f"<div style='{CONTAINER}'>{render_hitl()}</div>")
+                # Additional sections
+                gr.HTML(render_gaps())
+                gr.HTML(render_recommendations())
+                gr.HTML(render_hitl())
 
             with gr.TabItem("Sources"):
                 gr.HTML(render_sources())
+        gr.HTML("</div>")
 
         # Export
         gr.HTML(render_export())
