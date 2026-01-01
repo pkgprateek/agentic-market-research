@@ -1,10 +1,10 @@
 """Enterprise-Grade UI Mock v3 — Best of Both Designs.
 
-Key fixes:
-- Consistent max-width container (900px like am2)
-- All sections use same padding
-- Everything centered like am2
-- Report uses Markdown not textbox
+Fixes:
+1. Report container properly wrapped
+2. Space after progress bar before tabs
+3. Consistent button sizes (height/padding)
+4. Research type cards like am1 (3 per row, 2 rows, with icons)
 
 Run: python -m src.ui.app_mock3
 Port: 7864
@@ -43,7 +43,7 @@ MDI_CDN = (
     "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
 )
 
-# Container width for consistent spacing (like am2)
+# Container for consistent spacing
 CONTAINER = "max-width: 900px; margin: 0 auto; padding: 0 1.5rem;"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -69,28 +69,96 @@ h1, h2, h3, h4 {{
     font-weight: 600 !important;
 }}
 
-/* Form Elements */
-input, textarea, select {{
-    background: {COLORS["bg_secondary"]} !important;
-    border: 1px solid {COLORS["border"]} !important;
-    color: {COLORS["text_primary"]} !important;
-    border-radius: 10px !important;
-}}
-
-input:focus, textarea:focus {{
-    border-color: {COLORS["accent"]} !important;
-    box-shadow: 0 0 0 3px {COLORS["accent_muted"]} !important;
-    outline: none !important;
-}}
-
-/* Buttons */
+/* Buttons - Consistent sizing */
 button.primary {{
     background: linear-gradient(135deg, {COLORS["accent"]} 0%, #0d9488 100%) !important;
     border: none !important;
     color: white !important;
     font-weight: 600 !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+}}
+
+/* Small buttons - consistent height */
+.btn-sm {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    height: 36px;
+    padding: 0 0.875rem;
+    background: {COLORS["bg_secondary"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 8px;
+    color: {COLORS["text_muted"]};
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}}
+
+.btn-sm:hover {{
+    border-color: {COLORS["accent"]};
+    color: {COLORS["text_primary"]};
+}}
+
+/* Research Type Cards (am1 style - 3 per row) */
+.research-card {{
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: {COLORS["bg_secondary"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 0;
+}}
+
+.research-card:hover {{
+    border-color: {COLORS["accent"]};
+    background: {COLORS["bg_elevated"]};
+}}
+
+.research-card.active {{
+    border-color: {COLORS["accent"]};
+    background: {COLORS["accent_muted"]};
+}}
+
+.research-card-icon {{
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    background: {COLORS["accent_muted"]};
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}}
+
+.research-card-icon .mdi {{
+    font-size: 1.125rem;
+    color: {COLORS["accent"]};
+}}
+
+.research-card-text {{
+    flex: 1;
+    min-width: 0;
+}}
+
+.research-card-title {{
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: {COLORS["text_primary"]};
+    margin-bottom: 0.125rem;
+}}
+
+.research-card-desc {{
+    font-size: 0.75rem;
+    color: {COLORS["text_muted"]};
+    line-height: 1.3;
 }}
 
 /* Cards */
@@ -99,31 +167,6 @@ button.primary {{
     border: 1px solid {COLORS["border"]};
     border-radius: 12px;
     padding: 1.25rem;
-}}
-
-/* Research Type Buttons (row like am2) */
-.research-btn {{
-    background: {COLORS["bg_secondary"]};
-    border: 1px solid {COLORS["border"]};
-    color: {COLORS["text_secondary"]};
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-    font-size: 0.85rem;
-    font-weight: 500;
-    white-space: nowrap;
-}}
-
-.research-btn:hover {{
-    border-color: {COLORS["accent"]};
-    color: {COLORS["text_primary"]};
-}}
-
-.research-btn.active {{
-    background: {COLORS["accent_muted"]};
-    border-color: {COLORS["accent"]};
-    color: {COLORS["accent"]};
 }}
 
 /* Source Card */
@@ -188,17 +231,24 @@ button.primary {{
     margin: 1.5rem 0;
 }}
 
-/* Export buttons */
+/* Export buttons - consistent size */
 .export-btn {{
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
-    padding: 0.5rem 1rem;
+    height: 40px;
+    padding: 0 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     border: none;
+    transition: all 0.15s;
+}}
+
+.export-btn:hover {{
+    transform: translateY(-1px);
 }}
 
 /* Gaps Section */
@@ -208,6 +258,14 @@ button.primary {{
     border-radius: 10px;
     padding: 1.25rem;
     border-top: 3px solid {COLORS["warning"]};
+}}
+
+/* Report container */
+.report-container {{
+    background: {COLORS["bg_card"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 12px;
+    padding: 1.5rem;
 }}
 
 /* Report content */
@@ -241,11 +299,23 @@ button.primary {{
 ::-webkit-scrollbar {{ width: 8px; }}
 ::-webkit-scrollbar-track {{ background: {COLORS["bg_primary"]}; }}
 ::-webkit-scrollbar-thumb {{ background: {COLORS["border"]}; border-radius: 4px; }}
+
+/* Animations */
+@keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Mock Data
 # ─────────────────────────────────────────────────────────────────────────────
+
+RESEARCH_TYPES = [
+    ("Company Analysis", "domain", "Deep dive on a single company"),
+    ("Competitive Comparison", "compare", "Compare 2-5 companies"),
+    ("Market Landscape", "earth", "Market overview & trends"),
+    ("Battle Card", "sword-cross", "Sales enablement"),
+    ("Investment Thesis", "cash-multiple", "Due diligence report"),
+    ("Custom Query", "help-circle", "Free-form research"),
+]
 
 MOCK_SOURCES = [
     {
@@ -330,7 +400,7 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
-# UI Components — All use same container width
+# UI Components
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -344,7 +414,7 @@ def render_base() -> str:
 
 
 def render_header() -> str:
-    """Header (am2 style - clean, centered)."""
+    """Header."""
     return f"""
     <div style="padding: 1rem 0; border-bottom: 1px solid {COLORS["border"]};">
         <div style="{CONTAINER}">
@@ -361,26 +431,27 @@ def render_header() -> str:
 
 
 def render_research_types() -> str:
-    """Research type buttons (am2 style - horizontal row)."""
-    types = [
-        ("Company Analysis", "domain"),
-        ("Competitive Comparison", "compare"),
-        ("Market Landscape", "earth"),
-        ("Battle Card", "sword-cross"),
-        ("Investment Thesis", "cash-multiple"),
-        ("Custom Query", "help-circle"),
-    ]
-
-    buttons = ""
-    for i, (name, icon) in enumerate(types):
+    """Research type cards (am1 style - 3 per row, 2 rows)."""
+    cards = ""
+    for i, (name, icon, desc) in enumerate(RESEARCH_TYPES):
         active = "active" if i == 0 else ""
-        buttons += f"""<button class="research-btn {active}"><span class="mdi mdi-{icon}"></span> {name}</button>"""
+        cards += f"""
+        <div class="research-card {active}">
+            <div class="research-card-icon">
+                <span class="mdi mdi-{icon}"></span>
+            </div>
+            <div class="research-card-text">
+                <div class="research-card-title">{name}</div>
+                <div class="research-card-desc">{desc}</div>
+            </div>
+        </div>
+        """
 
     return f"""
-    <div style="padding: 1rem 0;">
+    <div style="padding: 1.25rem 0;">
         <div style="{CONTAINER}">
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                {buttons}
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                {cards}
             </div>
         </div>
     </div>
@@ -388,29 +459,21 @@ def render_research_types() -> str:
 
 
 def render_input_section() -> str:
-    """Input section (am2 style)."""
+    """Input section with consistent button sizes."""
     return f"""
-    <div style="padding: 1rem 0;">
+    <div style="padding: 0.75rem 0 1rem;">
         <div style="{CONTAINER}">
-            <div style="position: relative;">
+            <div style="position: relative; margin-bottom: 0.75rem;">
                 <input type="text" value="Tesla" placeholder="Research a company, market, or topic..."
-                       style="width: 100%; padding: 0.875rem 1rem 0.875rem 2.5rem; font-size: 1rem; 
+                       style="width: 100%; height: 48px; padding: 0 1rem 0 2.75rem; font-size: 1rem; 
                               background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
                               border-radius: 10px; color: {COLORS["text_primary"]};">
-                <span class="mdi mdi-magnify" style="position: absolute; left: 0.875rem; top: 50%; 
+                <span class="mdi mdi-magnify" style="position: absolute; left: 1rem; top: 50%; 
                       transform: translateY(-50%); color: {COLORS["text_muted"]}; font-size: 1.25rem;"></span>
             </div>
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem;">
-                <button style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
-                               color: {COLORS["text_muted"]}; padding: 0.5rem 0.75rem; border-radius: 6px; 
-                               font-size: 0.8rem; cursor: pointer;">
-                    <span class="mdi mdi-cog"></span> Settings
-                </button>
-                <button style="background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
-                               color: {COLORS["text_muted"]}; padding: 0.5rem 0.75rem; border-radius: 6px; 
-                               font-size: 0.8rem; cursor: pointer;">
-                    <span class="mdi mdi-history"></span> History
-                </button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-sm"><span class="mdi mdi-cog"></span> Settings</button>
+                <button class="btn-sm"><span class="mdi mdi-history"></span> History</button>
             </div>
         </div>
     </div>
@@ -418,12 +481,12 @@ def render_input_section() -> str:
 
 
 def render_progress() -> str:
-    """Progress bar (centered like am2)."""
+    """Progress bar with space after."""
     return f"""
-    <div style="padding: 1rem 0;">
+    <div style="padding: 0.75rem 0 1.5rem;">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
-                <span class="mdi mdi-loading" style="color: {COLORS["accent"]}; animation: spin 1s linear infinite;"></span>
+                <span class="mdi mdi-loading" style="color: {COLORS["accent"]}; font-size: 1rem; animation: spin 1s linear infinite;"></span>
                 <span style="color: {COLORS["text_secondary"]}; font-size: 0.9rem;">Researching Tesla...</span>
             </div>
             <div class="progress-bar">
@@ -434,7 +497,21 @@ def render_progress() -> str:
             </p>
         </div>
     </div>
-    <style>@keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}</style>
+    """
+
+
+def render_report_header() -> str:
+    """Report card header."""
+    return f"""
+    <div style="{CONTAINER}">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span>
+                Analysis Report
+            </h3>
+            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
+        </div>
+    </div>
     """
 
 
@@ -606,11 +683,11 @@ def render_sources() -> str:
     return f"""
     <div style="{CONTAINER}">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]};">
-                <span class="mdi mdi-text-box-multiple" style="color: {COLORS["accent"]};"></span> Sources ({len(MOCK_SOURCES)})
+            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
+                <span class="mdi mdi-text-box-multiple" style="color: {COLORS["accent"]};"></span>
+                Sources ({len(MOCK_SOURCES)})
             </h3>
-            <button style="background: transparent; border: 1px dashed {COLORS["border"]}; color: {COLORS["text_muted"]}; 
-                           padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.8rem; cursor: pointer;">
+            <button class="btn-sm" style="border-style: dashed;">
                 <span class="mdi mdi-plus"></span> Add Source
             </button>
         </div>
@@ -639,7 +716,7 @@ def render_footer() -> str:
 
 
 def create_mock_ui() -> gr.Blocks:
-    """Create UI with consistent spacing throughout."""
+    """Create UI with all fixes applied."""
 
     with gr.Blocks() as app:
         # Base styles
@@ -648,40 +725,30 @@ def create_mock_ui() -> gr.Blocks:
         # Header
         gr.HTML(render_header())
 
-        # Research Types (horizontal buttons)
+        # Research Types (am1 style - 3x2 grid)
         gr.HTML(render_research_types())
 
         # Input Section
         gr.HTML(render_input_section())
 
-        # Progress
+        # Progress (with space after)
         gr.HTML(render_progress())
 
         # Tabs for Report/Sources
         with gr.Tabs():
             with gr.TabItem("Report"):
-                # Report card header
+                # Report header
+                gr.HTML(render_report_header())
+
+                # Report content in proper container
                 gr.HTML(f"""
                 <div style="{CONTAINER}">
-                    <div class="card" style="margin-bottom: 1rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]};">
-                                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span> Analysis Report
-                            </h3>
-                            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
-                        </div>
-                    </div>
-                </div>
+                    <div class="report-container">
                 """)
+                gr.Markdown(MOCK_REPORT, elem_classes=["report-md"])
+                gr.HTML("</div></div>")
 
-                # Report markdown (wrapped in container)
-                with gr.Row():
-                    with gr.Column():
-                        gr.HTML(f"<div style='{CONTAINER}'>")
-                        gr.Markdown(MOCK_REPORT, elem_classes=["report-md"])
-                        gr.HTML("</div>")
-
-                # Gaps, Recommendations, HITL (all in container)
+                # Gaps, Recommendations, HITL
                 gr.HTML(f"<div style='{CONTAINER}'>{render_gaps()}</div>")
                 gr.HTML(f"<div style='{CONTAINER}'>{render_recommendations()}</div>")
                 gr.HTML(f"<div style='{CONTAINER}'>{render_hitl()}</div>")
@@ -701,7 +768,7 @@ def create_mock_ui() -> gr.Blocks:
 if __name__ == "__main__":
     app = create_mock_ui()
     print("\n" + "=" * 60)
-    print("  MARKET INTELLIGENCE UI v3 (Fixed Spacing)")
+    print("  MARKET INTELLIGENCE UI v3")
     print("  URL: http://127.0.0.1:7864")
     print("=" * 60 + "\n")
     app.launch(server_name="127.0.0.1", server_port=7864, share=False)
