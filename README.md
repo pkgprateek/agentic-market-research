@@ -3,7 +3,6 @@
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/pkgprateek/agentic-market-research)
 
 > **Enterprise-grade multi-agent system for automated competitive intelligence.**  
@@ -50,15 +49,12 @@ graph LR
 *   **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (State management & coordination)
 *   **LLM Integration:** [OpenRouter](https://openrouter.ai/) (Access to Claude 3.5 Sonnet, GPT-4o, etc.)
 *   **Search:** [Tavily AI](https://tavily.com/) (Optimized for LLM research)
-*   **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Async REST API)
 *   **Frontend:** [Gradio](https://www.gradio.app/) (Interactive UI)
-*   **Infrastructure:** Docker & Docker Compose
 
 ## ⚡ Quick Start
 
 ### Prerequisites
 *   Python 3.12+
-*   Docker (optional)
 *   API Keys: OpenRouter, Tavily
 
 ### Local Installation
@@ -73,7 +69,7 @@ graph LR
     ```bash
     python -m venv venv
     source venv/bin/activate
-    pip install uv && uv pip install -r requirements.txt
+    make install
     ```
 
 3.  **Configure credentials:**
@@ -84,36 +80,18 @@ graph LR
 
 4.  **Run the application:**
     ```bash
-    # Run
-    python src/ui/app.py
+    make run
     # Open http://localhost:7860
     ```
-
-### Docker Deployment
-
-```bash
-docker-compose up --build
-```
 
 ## 🧪 Testing & Quality Assurance
 
 This project maintains high code quality standards with comprehensive testing and linting.
 
-## Testing
-
-Run the full test suite (Linting, Type Checking, Unit & Integration Tests):
-
 ```bash
-./scripts/run_all_tests.sh
-```
-
-Or run individually:
-
-```bash
-ruff check src/ tests/       # Linting
-mypy src/                    # Type Checking
-pytest tests/unit/ -v        # Unit Tests
-pytest tests/integration/ -v # Integration Tests
+make check   # Run all checks (lint + typecheck + test)
+make test    # Run tests only
+make lint    # Lint only
 ```
 
 ## 📊 Performance Metrics
