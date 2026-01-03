@@ -1,8 +1,9 @@
 """Pytest configuration and fixtures."""
 
 import sys
-import pytest
 from pathlib import Path
+
+import pytest
 
 # Add project root to Python path for src imports
 project_root = Path(__file__).parent

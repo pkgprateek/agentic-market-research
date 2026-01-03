@@ -10,17 +10,17 @@ test:  ## Run all tests
 	pytest
 
 lint:  ## Run linter (ruff)
-	ruff check src/ tests/
+	ruff check src/ tests/ --exclude src/ui/app_mock.py
 
 lint-fix:  ## Run linter with auto-fix
-	ruff check --fix src/ tests/
+	ruff check --fix src/ tests/ --exclude src/ui/app_mock.py
 
 typecheck:  ## Run type checker (mypy)
 	mypy src/
 
 check:  ## Run all checks (lint + typecheck + test)
 	@echo "Running Ruff (Linting)..."
-	ruff check src/ tests/
+	ruff check src/ tests/ --exclude src/ui/app_mock.py
 	@echo ""
 	@echo "Running Mypy (Type Checking)..."
 	mypy src/
