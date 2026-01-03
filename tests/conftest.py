@@ -10,13 +10,17 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 
-@pytest.fixture
-def mock_env(monkeypatch):
-    """Mock environment variables for tests that need LLM config.
+@pytest.fixture(autouse=True)
+def mock_env(request, monkeypatch):
+    """Mock environment variables for all tests.
 
-    Note: Not autouse - only use where explicitly needed.
-    Config tests bypass this to test specific scenarios.
+    This ensures tests work in CI where no .env file exists.
+    Tests marked with @pytest.mark.no_mock_env will skip this fixture.
     """
+    # Skip for tests that need to control their own environment
+    if request.node.get_closest_marker("no_mock_env"):
+        return
+
     monkeypatch.setenv("GROQ_API_KEY", "gsk-mock-key")
     monkeypatch.setenv("TAVILY_API_KEY", "tvly-mock-key")
     monkeypatch.setenv("LANGCHAIN_TRACING", "false")

@@ -1,7 +1,7 @@
 """Unit tests for configuration management.
 
-These tests create Settings instances directly with explicit values
-to avoid interference from the .env file.
+These tests use @pytest.mark.no_mock_env to bypass the autouse fixture
+and create Settings instances directly with explicit values.
 """
 
 import pytest
@@ -9,13 +9,14 @@ import pytest
 from src.utils.config import Settings
 
 
+@pytest.mark.no_mock_env
 def test_settings_with_groq():
     """Test settings with Groq API key."""
     settings = Settings(
         groq_api_key="test-groq-key",
         tavily_api_key="test-tavily-key",
         environment="production",
-        _env_file=None,  # Disable .env file loading
+        _env_file=None,
     )
 
     assert settings.groq_api_key == "test-groq-key"
@@ -25,6 +26,7 @@ def test_settings_with_groq():
     assert settings.is_production is True
 
 
+@pytest.mark.no_mock_env
 def test_settings_with_openrouter():
     """Test settings with OpenRouter API key (Groq not set)."""
     settings = Settings(
@@ -38,6 +40,7 @@ def test_settings_with_openrouter():
     assert settings.llm_base_url == "https://openrouter.ai/api/v1"
 
 
+@pytest.mark.no_mock_env
 def test_settings_with_defaults():
     """Test settings use defaults for optional fields."""
     settings = Settings(
@@ -51,6 +54,7 @@ def test_settings_with_defaults():
     assert settings.langchain_project == "market-intelligence"
 
 
+@pytest.mark.no_mock_env
 def test_settings_with_missing_llm_key():
     """Test settings raise error when no LLM key configured."""
     settings = Settings(
@@ -62,6 +66,7 @@ def test_settings_with_missing_llm_key():
         _ = settings.llm_provider
 
 
+@pytest.mark.no_mock_env
 def test_is_production_property():
     """Test is_production property works correctly."""
     # Test development (default)
