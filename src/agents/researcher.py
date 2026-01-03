@@ -1,6 +1,5 @@
 """Research Agent for gathering market intelligence data."""
 
-from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.tools.search import TavilySearchTool
@@ -30,9 +29,9 @@ class ResearchAgent(BaseAgent):
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: str | None = None,
         temperature: float = 0.3,  # Lower for more factual responses
-        cost_tracker: Optional[CostTracker] = None,
+        cost_tracker: CostTracker | None = None,
     ):
         """
         Initialize Research Agent.
@@ -58,7 +57,7 @@ class ResearchAgent(BaseAgent):
     async def run(  # type: ignore[override]
         self,
         company_name: str,
-        industry: Optional[str] = None,
+        industry: str | None = None,
         research_depth: str = "comprehensive",
     ) -> ResearchOutput:
         """

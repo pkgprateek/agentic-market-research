@@ -1,6 +1,5 @@
 """Analysis Agent for competitive intelligence and SWOT analysis."""
 
-from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker
@@ -30,9 +29,9 @@ class AnalysisAgent(BaseAgent):
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: str | None = None,
         temperature: float = 0.4,  # Balanced for analytical reasoning
-        cost_tracker: Optional[CostTracker] = None,
+        cost_tracker: CostTracker | None = None,
     ):
         """
         Initialize Analysis Agent.

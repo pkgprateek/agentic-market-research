@@ -1,7 +1,7 @@
 """Base agent class for all agents in the system."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
 
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
@@ -24,9 +24,9 @@ class BaseAgent(ABC):
     def __init__(
         self,
         name: str,
-        model: Optional[str] = None,
+        model: str | None = None,
         temperature: float = 0.7,
-        cost_tracker: Optional[CostTracker] = None,
+        cost_tracker: CostTracker | None = None,
     ):
         """
         Initialize base agent.
@@ -64,7 +64,7 @@ class BaseAgent(ABC):
         pass
 
     @abstractmethod
-    async def run(self, **kwargs) -> Dict[str, Any]:
+    async def run(self, **kwargs) -> dict[str, Any]:
         """
         Execute the agent's main task.
 
@@ -123,7 +123,7 @@ class BaseAgent(ABC):
     def _create_messages(
         self,
         user_message: str,
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
     ) -> list[BaseMessage]:
         """
         Create message list for LLM.
@@ -146,7 +146,7 @@ class BaseAgent(ABC):
 
         return messages
 
-    def get_cost_summary(self) -> Dict[str, Any]:
+    def get_cost_summary(self) -> dict[str, Any]:
         """
         Get cost summary for this agent's operations.
 

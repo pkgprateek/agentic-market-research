@@ -997,7 +997,7 @@ def create_mock_ui() -> gr.Blocks:
         gr.HTML(render_progress())
 
         # Spacer before tabs - reduced to 30% of original
-        gr.HTML(f"<div style='padding: 0.45rem 0;'></div>")
+        gr.HTML("<div style='padding: 0.45rem 0;'></div>")
 
         # Tabs - wrapped in container for alignment
         gr.HTML(f"<div style='{CONTAINER}'>")
