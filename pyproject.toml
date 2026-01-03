@@ -12,6 +12,9 @@ asyncio_mode = "auto"
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"
+markers = [
+    "no_mock_env: skip the autouse mock_env fixture for this test",
+]
 
 [tool.ruff]
 target-version = "py312"
