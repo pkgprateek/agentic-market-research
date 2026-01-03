@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.utils.cost_tracker import CostTracker, TokenUsage, BudgetExceededError
+from src.utils.cost_tracker import BudgetExceededError, CostTracker, TokenUsage
 
 
 def test_token_usage():

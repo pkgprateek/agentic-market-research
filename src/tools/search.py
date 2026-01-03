@@ -1,7 +1,5 @@
 """Search tools for web research using Tavily API."""
 
-from typing import Dict, List, Optional
-
 from tavily import TavilyClient  # type: ignore[import-untyped]
 
 from src.utils.config import get_settings
@@ -18,7 +16,7 @@ class TavilySearchTool:
     results ideal for LLM consumption.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize Tavily search tool.
 
@@ -36,9 +34,9 @@ class TavilySearchTool:
         query: str,
         max_results: int = 5,
         search_depth: str = "advanced",
-        include_domains: Optional[List[str]] = None,
-        exclude_domains: Optional[List[str]] = None,
-    ) -> Dict:
+        include_domains: list[str] | None = None,
+        exclude_domains: list[str] | None = None,
+    ) -> dict:
         """
         Perform web search using Tavily.
 
@@ -78,7 +76,7 @@ class TavilySearchTool:
         self,
         company_name: str,
         max_results: int = 10,
-    ) -> Dict:
+    ) -> dict:
         """
         Get comprehensive company information.
 
@@ -99,9 +97,9 @@ class TavilySearchTool:
     async def get_competitor_info(
         self,
         company_name: str,
-        industry: Optional[str] = None,
+        industry: str | None = None,
         max_results: int = 10,
-    ) -> Dict:
+    ) -> dict:
         """
         Find competitors for a given company.
 
@@ -125,9 +123,9 @@ class TavilySearchTool:
     async def get_market_trends(
         self,
         industry: str,
-        year: Optional[str] = "2025",
+        year: str | None = "2025",
         max_results: int = 8,
-    ) -> Dict:
+    ) -> dict:
         """
         Get market trends for an industry.
 
@@ -147,7 +145,7 @@ class TavilySearchTool:
             search_depth="advanced",
         )
 
-    def format_results_for_llm(self, search_response: Dict) -> str:
+    def format_results_for_llm(self, search_response: dict) -> str:
         """
         Format search results for LLM consumption.
 
@@ -170,10 +168,7 @@ class TavilySearchTool:
             score = result.get("score", 0)
 
             formatted.append(
-                f"[{i}] {title}\n"
-                f"URL: {url}\n"
-                f"Relevance: {score:.2f}\n"
-                f"Content: {content}\n"
+                f"[{i}] {title}\nURL: {url}\nRelevance: {score:.2f}\nContent: {content}\n"
             )
 
         # Add AI answer if available
@@ -181,37 +176,3 @@ class TavilySearchTool:
             formatted.insert(0, f"AI Summary: {answer}\n\n")
 
         return "\n".join(formatted)
-
-
-class WikipediaSearchTool:
-    """
-    Wikipedia search for factual company/product information.
-
-    Note: This is a simple wrapper. For production, consider using
-    the wikipedia-api library for more robust access.
-    """
-
-    def __init__(self):
-        """Initialize Wikipedia search tool."""
-        logger.info("Wikipedia search tool initialized")
-
-    async def search(self, query: str, max_results: int = 3) -> Dict:
-        """
-        Search Wikipedia (placeholder for now).
-
-        Args:
-            query: Search query
-            max_results: Maximum results
-
-        Returns:
-            Search results dictionary
-        """
-        # TODO: Implement actual Wikipedia API integration
-        # For now, we'll use Tavily which can search Wikipedia
-        logger.info(f"Wikipedia search: {query}")
-
-        return {
-            "query": query,
-            "results": [],
-            "note": "Wikipedia integration pending - using Tavily for now",
-        }

@@ -3,9 +3,9 @@
 Uses Python 3.10+ type syntax for clarity and reduced imports.
 """
 
+import operator
 from enum import Enum
 from typing import Annotated, Any, Literal, TypedDict
-import operator
 
 
 class ResearchType(str, Enum):

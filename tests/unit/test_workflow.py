@@ -1,10 +1,11 @@
 """Unit tests for LangGraph workflow state and nodes."""
 
-import pytest
 from unittest.mock import AsyncMock
 
-from src.workflows.types import IntelligenceState
+import pytest
+
 from src.workflows.market_analysis import MarketIntelligenceWorkflow
+from src.workflows.types import IntelligenceState
 
 
 class TestIntelligenceState:

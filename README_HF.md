@@ -3,7 +3,7 @@ title: Agentic Market Research
 emoji: 🔍
 colorFrom: blue
 colorTo: purple
-sdk: docker
+sdk: gradio
 sdk_version: "5.0.0"
 app_file: src/ui/app.py
 pinned: false
@@ -46,7 +46,7 @@ vs $3,000 for manual research.
 - LangGraph for multi-agent coordination
 - OpenRouter for LLM access (400+ models)
 - Tavily API for web search
-- FastAPI + Gradio deployment
+- Gradio deployment
 
 **Source code:** [github.com/pkgprateek/agentic-market-research](https://github.com/pkgprateek/agentic-market-research)
 

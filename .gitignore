@@ -63,8 +63,9 @@ test_checkpoints.db
 checkpoints.db
 checkpoints.db-*
 
-# AI Constitution (personal guidance document)
+# AI Constitution (personal guidance documents)
 CLAUDE.md
+AGENT_INSTRUCTIONS.md
 
 # Agent Skills (modular AI guidance specifications)
 agent_skills/

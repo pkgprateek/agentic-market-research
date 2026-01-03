@@ -12,43 +12,27 @@ class Settings(BaseSettings):
     )
 
     # === LLM Providers ===
-    openrouter_api_key: str = Field(..., description="OpenRouter API key")
+    # Groq (primary - fast inference)
+    groq_api_key: str | None = Field(None, description="Groq API key")
+
+    # OpenRouter (secondary - 400+ models)
+    openrouter_api_key: str | None = Field(None, description="OpenRouter API key")
 
     # === Search APIs ===
     tavily_api_key: str = Field(..., description="Tavily API key for web search")
-    brave_search_api_key: str | None = Field(
-        None, description="Brave Search API key (optional backup)"
-    )
 
     # === Observability ===
-    langsmith_api_key: str | None = Field(
-        None, description="LangSmith API key for tracing"
-    )
-    langchain_tracing: bool = Field(True, description="Enable LangChain tracing")
-    langchain_project: str = Field(
-        "market-intelligence-prod", description="LangSmith project name"
-    )
-    langchain_endpoint: str = Field(
-        "https://api.smith.langchain.com", description="LangSmith endpoint"
-    )
+    langsmith_api_key: str | None = Field(None, description="LangSmith API key")
+    langchain_tracing: bool = Field(False, description="Enable LangChain tracing")
+    langchain_project: str = Field("market-intelligence", description="LangSmith project")
 
     # === Application Settings ===
-    environment: str = Field(
-        "development", description="Environment: development, production"
-    )
+    environment: str = Field("development", description="development or production")
     default_model: str = Field(
-        "x-ai/grok-4.1-fast:free",  # Free for testing; production: anthropic/claude-sonnet-4.5 or google/gemini-3-pro-preview
-        description="Default LLM model (via OpenRouter)",
+        "llama-3.3-70b-versatile",
+        description="Default LLM model",
     )
-    max_cost_per_run: float = Field(
-        2.0, description="Maximum cost per workflow run (USD)"
-    )
-
-    # === Optional: Local LLM ===
-    ollama_base_url: str | None = Field(
-        None, description="Ollama base URL for local models"
-    )
-    ollama_model: str = Field("llama3.2:3b", description="Ollama model name")
+    max_cost_per_run: float = Field(2.0, description="Max cost per run (USD)")
 
     @property
     def is_production(self) -> bool:
@@ -56,15 +40,34 @@ class Settings(BaseSettings):
         return self.environment.lower() == "production"
 
     @property
-    def openrouter_base_url(self) -> str:
-        """OpenRouter API base URL."""
-        return "https://openrouter.ai/api/v1"
+    def llm_provider(self) -> str:
+        """Determine which LLM provider to use based on available keys."""
+        if self.groq_api_key:
+            return "groq"
+        elif self.openrouter_api_key:
+            return "openrouter"
+        else:
+            raise ValueError("No LLM API key configured. Set GROQ_API_KEY or OPENROUTER_API_KEY")
+
+    @property
+    def llm_api_key(self) -> str:
+        """Get the active LLM API key."""
+        if self.groq_api_key:
+            return self.groq_api_key
+        elif self.openrouter_api_key:
+            return self.openrouter_api_key
+        else:
+            raise ValueError("No LLM API key configured")
+
+    @property
+    def llm_base_url(self) -> str:
+        """Get the LLM API base URL based on provider."""
+        if self.groq_api_key:
+            return "https://api.groq.com/openai/v1"
+        else:
+            return "https://openrouter.ai/api/v1"
 
 
 def get_settings() -> Settings:
     """Get settings instance (lazy-loaded)."""
     return Settings()  # type: ignore[call-arg]
-
-
-# For convenience, but use get_settings() in tests
-settings = None  # Will be initialized when needed

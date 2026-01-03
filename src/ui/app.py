@@ -1,411 +1,275 @@
-"""Gradio UI for Market Intelligence System.
+"""Market Intelligence UI — Premium Enterprise Design.
 
 F1: Research Type Selection — The gateway feature.
-Uses Material Design Icons (MDI) as specified in CLAUDE.md.
+Uses Material Design Icons (MDI) and premium dark theme from app_mock.py.
 """
 
-import asyncio
-import logging
 import os
-import tempfile
-from datetime import datetime
 
 import gradio as gr
 
-from src.utils.logging import setup_logger
-from src.workflows.market_analysis import MarketIntelligenceWorkflow
-from src.workflows.types import ResearchType
-
-logger = setup_logger(__name__)
-
-
 # ─────────────────────────────────────────────────────────────────────────────
-# Material Design Icons (MDI) - CLAUDE.md specification
+# Design System (from app_mock.py — DO NOT MODIFY)
 # ─────────────────────────────────────────────────────────────────────────────
 
-MDI_CDN = (
-    "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
-)
-
-MDI_ICONS = {
-    "domain": "mdi-domain",
-    "compare": "mdi-compare",
-    "earth": "mdi-earth",
-    "sword-cross": "mdi-sword-cross",
-    "cash-multiple": "mdi-cash-multiple",
-    "help-circle": "mdi-help-circle",
+COLORS = {
+    "bg_primary": "#0a0a0c",
+    "bg_secondary": "#131316",
+    "bg_elevated": "#1a1a1f",
+    "bg_card": "#16161a",
+    "border": "#2a2a33",
+    "border_accent": "#3d3d4a",
+    "text_primary": "#f4f4f5",
+    "text_secondary": "#a1a1aa",
+    "text_muted": "#71717a",
+    "accent": "#14b8a6",
+    "accent_hover": "#2dd4bf",
+    "accent_muted": "rgba(20, 184, 166, 0.15)",
+    "success": "#10b981",
+    "success_bg": "rgba(16, 185, 129, 0.15)",
+    "warning": "#f59e0b",
+    "warning_bg": "rgba(245, 158, 11, 0.15)",
+    "error": "#ef4444",
+    "error_bg": "rgba(239, 68, 68, 0.15)",
+    "info": "#3b82f6",
+    "info_bg": "rgba(59, 130, 246, 0.15)",
 }
 
+MDI_CDN = "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
+
+CONTAINER = "max-width: 900px; margin: 0 auto; padding: 0 1.5rem;"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Research Type Configuration
+# CSS Theme (from app_mock.py — DO NOT MODIFY)
 # ─────────────────────────────────────────────────────────────────────────────
 
-RESEARCH_TYPE_OPTIONS = {
-    "Company Analysis": ResearchType.COMPANY_ANALYSIS,
-    "Competitive Comparison": ResearchType.COMPETITIVE_COMPARISON,
-    "Market Landscape": ResearchType.MARKET_LANDSCAPE,
-    "Battle Card": ResearchType.BATTLE_CARD,
-    "Investment Thesis": ResearchType.INVESTMENT_THESIS,
-    "Custom Query": ResearchType.CUSTOM_QUERY,
-}
+THEME_CSS = f"""
+* {{ box-sizing: border-box; }}
 
-RESEARCH_TYPE_META = {
-    "Company Analysis": {
-        "icon": "domain",
-        "desc": "Deep dive on a single company — products, positioning, SWOT",
-    },
-    "Competitive Comparison": {
-        "icon": "compare",
-        "desc": "Side-by-side comparison of 2-5 competitors",
-    },
-    "Market Landscape": {
-        "icon": "earth",
-        "desc": "Full market overview with players, trends, and entry analysis",
-    },
-    "Battle Card": {
-        "icon": "sword-cross",
-        "desc": "1-page sales enablement document",
-    },
-    "Investment Thesis": {
-        "icon": "cash-multiple",
-        "desc": "Due diligence report for investors",
-    },
-    "Custom Query": {
-        "icon": "help-circle",
-        "desc": "Free-form research question",
-    },
-}
+.gradio-container {{
+    background: {COLORS["bg_secondary"]} !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    color: {COLORS["text_primary"]} !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}}
 
-# Model options for power users who want to test different models
-MODEL_OPTIONS = {
-    "Grok 3 (Free)": "x-ai/grok-3-fast:free",
-    "GPT-4.1 Mini": "openai/gpt-4.1-mini",
-    "Claude Sonnet 4": "anthropic/claude-sonnet-4",
-    "Gemini 2.5 Flash": "google/gemini-2.5-flash-preview-05-20",
-}
+.dark, .gr-form, .gr-box, .gr-panel {{
+    background: {COLORS["bg_primary"]} !important;
+}}
 
-# Progress messages - human-readable status updates
-PROGRESS_MESSAGES = {
-    "starting": "Initializing research agents...",
-    "research": "Gathering intelligence from multiple sources...",
-    "analysis": "Analyzing competitive landscape and market position...",
-    "writing": "Synthesizing insights into actionable report...",
-    "complete": "Report ready",
-}
+h1, h2, h3, h4 {{
+    color: {COLORS["text_primary"]} !important;
+    font-weight: 600 !important;
+}}
 
+/* Primary Button */
+button.primary {{
+    background: linear-gradient(135deg, {COLORS["accent"]} 0%, #0d9488 100%) !important;
+    border: none !important;
+    color: white !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+}}
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Logging Infrastructure (for progress tracking)
-# ─────────────────────────────────────────────────────────────────────────────
+/* Research Type Cards */
+.research-card {{
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    background: {COLORS["bg_secondary"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}}
 
+.research-card:hover {{
+    border-color: {COLORS["accent"]};
+    background: {COLORS["bg_elevated"]};
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}}
 
-class ProgressTracker:
-    """Tracks workflow progress for user-friendly status updates."""
+.research-card.active {{
+    border-color: {COLORS["accent"]};
+    background: {COLORS["accent_muted"]};
+    box-shadow: 0 0 0 3px {COLORS["accent_muted"]}, 0 8px 24px rgba(20, 184, 166, 0.2);
+}}
 
-    def __init__(self) -> None:
-        self.current_stage = "starting"
-        self.messages: list[str] = []
+.research-card-icon {{
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    background: {COLORS["accent_muted"]};
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}}
 
-    def update(self, stage: str) -> None:
-        self.current_stage = stage
-        if stage in PROGRESS_MESSAGES:
-            self.messages.append(PROGRESS_MESSAGES[stage])
+.research-card-icon .mdi {{
+    font-size: 1.25rem;
+    color: {COLORS["accent"]};
+}}
 
-    def get_status(self) -> str:
-        return PROGRESS_MESSAGES.get(self.current_stage, "Processing...")
+.research-card-title {{
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: {COLORS["text_primary"]};
+    margin-bottom: 0.125rem;
+}}
 
+.research-card-desc {{
+    font-size: 0.75rem;
+    color: {COLORS["text_muted"]};
+    line-height: 1.3;
+}}
 
-class QueueHandler(logging.Handler):
-    """Routes logs to progress tracker."""
-
-    def __init__(self, tracker: ProgressTracker) -> None:
-        super().__init__()
-        self.tracker = tracker
-
-    def emit(self, record: logging.LogRecord) -> None:
-        try:
-            msg = record.getMessage().lower()
-            if "research" in msg:
-                self.tracker.update("research")
-            elif "analysis" in msg:
-                self.tracker.update("analysis")
-            elif "writ" in msg:
-                self.tracker.update("writing")
-        except Exception:
-            pass
-
-
-def attach_progress_tracker(tracker: ProgressTracker) -> QueueHandler:
-    """Attach progress tracker to loggers."""
-    handler = QueueHandler(tracker)
-    logging.getLogger().addHandler(handler)
-    for name, logger_obj in logging.Logger.manager.loggerDict.items():
-        if name.startswith("src") and isinstance(logger_obj, logging.Logger):
-            logger_obj.addHandler(handler)
-    return handler
-
-
-def detach_progress_tracker(handler: QueueHandler) -> None:
-    """Remove progress tracker from loggers."""
-    logging.getLogger().removeHandler(handler)
-    for name, logger_obj in logging.Logger.manager.loggerDict.items():
-        if name.startswith("src") and isinstance(logger_obj, logging.Logger):
-            logger_obj.removeHandler(handler)
+/* Scrollbar */
+::-webkit-scrollbar {{ width: 8px; }}
+::-webkit-scrollbar-track {{ background: {COLORS["bg_primary"]}; }}
+::-webkit-scrollbar-thumb {{ background: {COLORS["border"]}; border-radius: 4px; }}
+"""
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# UI Event Handlers
+# F1: Research Type Configuration
 # ─────────────────────────────────────────────────────────────────────────────
 
-
-def on_research_type_change(research_type: str) -> tuple[str, dict, dict]:
-    """Handle research type selection — show appropriate form with MDI icon."""
-    meta = RESEARCH_TYPE_META.get(research_type, {})
-    icon = meta.get("icon", "help-circle")
-    desc = meta.get("desc", "")
-
-    icon_html = f'<span class="mdi mdi-{icon}" style="font-size:1.2rem;margin-right:0.5rem;"></span>'
-    description_html = f"{icon_html} **{research_type}**: {desc}"
-
-    is_company_analysis = research_type == "Company Analysis"
-
-    return (
-        description_html,
-        gr.update(visible=is_company_analysis),
-        gr.update(visible=not is_company_analysis),
-    )
-
-
-async def run_analysis(
-    research_type_label: str,
-    company_name: str,
-    industry: str,
-    research_depth: str,
-    model_choice: str,
-):
-    """Execute market intelligence analysis with progress updates."""
-    if not company_name:
-        yield ("", "Please enter a company name", "⚠️ Missing input")
-        return
-
-    research_type = RESEARCH_TYPE_OPTIONS.get(
-        research_type_label, ResearchType.COMPANY_ANALYSIS
-    )
-    model = MODEL_OPTIONS.get(model_choice, "x-ai/grok-3-fast:free")
-
-    # Default budget from env (not user-configurable)
-    max_budget = float(os.getenv("MAX_BUDGET", "2.0"))
-
-    tracker = ProgressTracker()
-    handler = attach_progress_tracker(tracker)
-    tracker.update("starting")
-
-    try:
-        workflow = MarketIntelligenceWorkflow(
-            max_budget=max_budget,
-            model_name=model,
-        )
-
-        task = asyncio.create_task(
-            workflow.run(
-                company_name=company_name,
-                industry=industry if industry else None,
-                thread_id=f"ui-{datetime.now().timestamp()}",
-                research_depth=research_depth.lower(),
-                research_type=research_type,
-            )
-        )
-
-        # Stream progress updates
-        while not task.done():
-            status = tracker.get_status()
-            yield (status, "Generating report...", f"🔄 {status}")
-            await asyncio.sleep(0.5)
-
-        result = await task
-        tracker.update("complete")
-
-        final_status = (
-            "✅ Complete" if not result.get("errors") else "❌ Error occurred"
-        )
-
-        yield (
-            tracker.get_status(),
-            result.get("full_report", "No report generated"),
-            final_status,
-        )
-
-    except Exception as e:
-        logger.error(f"Analysis failed: {e}")
-        yield ("", f"Error: {e}", "❌ Failed")
-
-    finally:
-        detach_progress_tracker(handler)
-
-
-def download_report(report_content: str) -> str | None:
-    """Generate downloadable markdown file."""
-    if not report_content:
-        return None
-
-    with tempfile.NamedTemporaryFile(
-        mode="w", delete=False, suffix=".md", encoding="utf-8"
-    ) as f:
-        f.write(report_content)
-        return f.name
+RESEARCH_TYPES = [
+    ("Company Analysis", "domain", "Deep dive on a single company"),
+    ("Competitive Comparison", "compare", "Compare 2-5 companies"),
+    ("Market Landscape", "earth", "Market overview & trends"),
+    ("Battle Card", "sword-cross", "Sales enablement"),
+    ("Investment Thesis", "cash-multiple", "Due diligence report"),
+    ("Custom Query", "help-circle", "Free-form research"),
+]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# UI Construction
+# UI Components
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def render_base() -> str:
+    """Base styles and fonts."""
+    return f"""
+    <link rel="stylesheet" href="{MDI_CDN}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <style>{THEME_CSS}</style>
+    """
+
+
+def render_header() -> str:
+    """Header with logo and title."""
+    return f"""
+    <div style="background: transparent; padding: 1.25rem 0; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
+        <div style="{CONTAINER}">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);">
+                    <span class="mdi mdi-chart-timeline-variant-shimmer" style="color: white; font-size: 1.5rem;"></span>
+                </div>
+                <div>
+                    <h1 style="margin: 0; font-size: 1.35rem; color: {COLORS["text_primary"]}; font-weight: 700;">
+                        Market Intelligence
+                    </h1>
+                    <p style="margin: 0; font-size: 0.8rem; color: {COLORS["text_muted"]};">
+                        Enterprise-grade competitive research
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_research_types() -> str:
+    """F1: Research type cards (3x2 grid)."""
+    cards = ""
+    for i, (name, icon, desc) in enumerate(RESEARCH_TYPES):
+        active = "active" if i == 0 else ""
+        cards += f"""
+        <div class="research-card {active}" data-index="{i}">
+            <div class="research-card-icon">
+                <span class="mdi mdi-{icon}"></span>
+            </div>
+            <div>
+                <div class="research-card-title">{name}</div>
+                <div class="research-card-desc">{desc}</div>
+            </div>
+        </div>
+        """
+
+    return f"""
+    <div style="padding: 1.5rem 0;">
+        <div style="{CONTAINER}">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <span class="mdi mdi-format-list-bulleted-type" style="color: {COLORS["accent"]}; font-size: 1.25rem;"></span>
+                <span style="font-weight: 600; color: {COLORS["text_primary"]};">What do you need?</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                {cards}
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_coming_soon() -> str:
+    """Placeholder for unimplemented features."""
+    return f"""
+    <div style="{CONTAINER}">
+        <div style="padding: 3rem; text-align: center; background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; border-radius: 12px; margin-top: 1rem;">
+            <span class="mdi mdi-hammer-wrench" style="font-size: 3rem; color: {COLORS["text_muted"]};"></span>
+            <h3 style="margin: 1rem 0 0.5rem; color: {COLORS["text_primary"]};">Coming Soon</h3>
+            <p style="margin: 0; color: {COLORS["text_muted"]}; font-size: 0.9rem;">
+                Select a research type above. Features are being implemented one at a time.
+            </p>
+        </div>
+    </div>
+    """
+
+
+def render_footer() -> str:
+    """Footer with technology credits."""
+    return f"""
+    <div style="text-align: center; padding: 1.5rem 0; border-top: 1px solid {COLORS["border"]}; margin-top: 2rem;">
+        <p style="margin: 0; font-size: 0.85rem; color: {COLORS["text_muted"]};">
+            <span class="mdi mdi-graph" style="color: {COLORS["accent"]};"></span> LangGraph •
+            <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> OpenRouter •
+            <span class="mdi mdi-magnify" style="color: {COLORS["accent"]};"></span> Tavily
+        </p>
+    </div>
+    """
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main UI
 # ─────────────────────────────────────────────────────────────────────────────
 
 
 def create_ui() -> gr.Blocks:
-    """Build the Gradio interface — clean, enterprise-grade."""
+    """Build the Gradio interface — F1: Research Type Selection only."""
 
     with gr.Blocks() as app:
+        # Base styles
+        gr.HTML(render_base())
+
         # Header
-        gr.HTML(f"""
-        <link rel="stylesheet" href="{MDI_CDN}">
-        <div style="text-align: center; padding: 1.5rem 0; border-bottom: 1px solid #eee;">
-            <h1 style="margin: 0; font-weight: 600;">
-                <span class="mdi mdi-chart-timeline-variant"></span>
-                Market Intelligence
-            </h1>
-            <p style="margin: 0.5rem 0 0; color: #666;">
-                Enterprise-grade competitive research in minutes
-            </p>
-        </div>
-        """)
+        gr.HTML(render_header())
 
-        with gr.Row():
-            # ─────────────────────────────────────────────────────────────────
-            # Left Column: Configuration
-            # ─────────────────────────────────────────────────────────────────
-            with gr.Column(scale=1):
-                # F1: Research Type Selection
-                gr.HTML("""
-                <h3 style="margin-bottom: 0.5rem;">
-                    <span class="mdi mdi-format-list-bulleted-type"></span>
-                    What do you need?
-                </h3>
-                """)
-                research_type_selector = gr.Radio(
-                    choices=list(RESEARCH_TYPE_OPTIONS.keys()),
-                    value="Company Analysis",
-                    label="Research Type",
-                    show_label=False,
-                )
-                research_type_description = gr.Markdown(
-                    value='<span class="mdi mdi-domain" style="font-size:1.2rem;margin-right:0.5rem;"></span> **Company Analysis**: Deep dive on a single company — products, positioning, SWOT'
-                )
+        # F1: Research Type Cards
+        gr.HTML(render_research_types())
 
-                # Dynamic Form: Company Analysis (F2)
-                with gr.Group(visible=True) as company_form:
-                    company_input = gr.Textbox(
-                        label="Company Name",
-                        placeholder="e.g., Tesla, Notion, Stripe",
-                    )
-                    industry_input = gr.Textbox(
-                        label="Industry (optional)",
-                        placeholder="e.g., Electric Vehicles, SaaS",
-                    )
-                    research_depth = gr.Radio(
-                        choices=["Basic", "Comprehensive"],
-                        value="Comprehensive",
-                        label="Research Depth",
-                        info="Basic: faster, key insights. Comprehensive: deeper analysis.",
-                    )
+        # Placeholder (F2+ will be added here)
+        gr.HTML(render_coming_soon())
 
-                # Placeholder for F3-F7
-                with gr.Group(visible=False) as coming_soon:
-                    gr.HTML("""
-                    <div style="padding: 2rem; text-align: center; background: #f8f9fa; border-radius: 8px;">
-                        <span class="mdi mdi-hammer-wrench" style="font-size: 2rem; color: #666;"></span>
-                        <h3>Coming Soon</h3>
-                        <p style="color: #666;">This research type is under development.</p>
-                    </div>
-                    """)
-
-                # Advanced Settings (for power users testing models)
-                with gr.Accordion("Advanced Settings", open=False):
-                    model_choice = gr.Dropdown(
-                        choices=list(MODEL_OPTIONS.keys()),
-                        value="Grok 3 (Free)",
-                        label="AI Model",
-                        info="Test different models for quality comparison",
-                    )
-
-                # Run button
-                run_btn = gr.Button(
-                    "Generate Report",
-                    variant="primary",
-                    size="lg",
-                )
-
-                # Progress indicator
-                progress_status = gr.Textbox(
-                    label="Status",
-                    value="Ready",
-                    interactive=False,
-                    show_label=False,
-                )
-
-            # ─────────────────────────────────────────────────────────────────
-            # Right Column: Report Output
-            # ─────────────────────────────────────────────────────────────────
-            with gr.Column(scale=2):
-                gr.HTML("""
-                <h3 style="margin-bottom: 1rem;">
-                    <span class="mdi mdi-file-document-outline"></span>
-                    Report
-                </h3>
-                """)
-
-                # Single clean output area
-                report_display = gr.Markdown(
-                    value="Your report will appear here after generation.",
-                    elem_id="report-output",
-                )
-
-                # Download option
-                download_btn = gr.DownloadButton(
-                    "Download Report (.md)",
-                    visible=True,
-                )
-
-        # ─────────────────────────────────────────────────────────────────────
-        # Event Wiring
-        # ─────────────────────────────────────────────────────────────────────
-
-        research_type_selector.change(
-            fn=on_research_type_change,
-            inputs=[research_type_selector],
-            outputs=[research_type_description, company_form, coming_soon],
-        )
-
-        run_btn.click(
-            fn=run_analysis,
-            inputs=[
-                research_type_selector,
-                company_input,
-                industry_input,
-                research_depth,
-                model_choice,
-            ],
-            outputs=[
-                progress_status,
-                report_display,
-                progress_status,
-            ],
-        )
-
-        download_btn.click(
-            fn=download_report,
-            inputs=[report_display],
-            outputs=[download_btn],
-        )
+        # Footer
+        gr.HTML(render_footer())
 
     return app
 
@@ -417,6 +281,11 @@ def create_ui() -> gr.Blocks:
 if __name__ == "__main__":
     is_deployment = os.getenv("SPACE_ID") or os.getenv("IS_DOCKER")
     server_name = "0.0.0.0" if is_deployment else "127.0.0.1"
+
+    print("\n" + "=" * 60)
+    print("  MARKET INTELLIGENCE")
+    print(f"  URL: http://{server_name}:7860")
+    print("=" * 60 + "\n")
 
     app = create_ui()
     app.launch(server_name=server_name, server_port=7860, share=False, show_error=True)

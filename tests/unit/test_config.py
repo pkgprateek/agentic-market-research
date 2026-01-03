@@ -1,71 +1,88 @@
-"""Unit tests for configuration management."""
+"""Unit tests for configuration management.
 
-import os
-from unittest.mock import patch
+These tests use @pytest.mark.no_mock_env to bypass the autouse fixture
+and create Settings instances directly with explicit values.
+"""
+
+import pytest
 
 from src.utils.config import Settings
 
 
-def test_settings_with_valid_env(monkeypatch):
-    """Test settings load correctly with valid environment variables."""
-    monkeypatch.setenv("OPENROUTER_API_KEY", "test-openrouter-key")
-    monkeypatch.setenv("TAVILY_API_KEY", "test-tavily-key")
-    monkeypatch.setenv("ENVIRONMENT", "production")
+@pytest.mark.no_mock_env
+def test_settings_with_groq():
+    """Test settings with Groq API key."""
+    settings = Settings(
+        groq_api_key="test-groq-key",
+        tavily_api_key="test-tavily-key",
+        environment="production",
+        _env_file=None,
+    )
 
-    settings = Settings()
-
-    assert settings.openrouter_api_key == "test-openrouter-key"
+    assert settings.groq_api_key == "test-groq-key"
     assert settings.tavily_api_key == "test-tavily-key"
-    assert settings.environment == "production"
+    assert settings.llm_provider == "groq"
+    assert settings.llm_base_url == "https://api.groq.com/openai/v1"
     assert settings.is_production is True
 
 
-def test_settings_with_defaults(monkeypatch):
+@pytest.mark.no_mock_env
+def test_settings_with_openrouter():
+    """Test settings with OpenRouter API key (Groq not set)."""
+    settings = Settings(
+        openrouter_api_key="test-openrouter-key",
+        tavily_api_key="test-tavily-key",
+        _env_file=None,
+    )
+
+    assert settings.openrouter_api_key == "test-openrouter-key"
+    assert settings.llm_provider == "openrouter"
+    assert settings.llm_base_url == "https://openrouter.ai/api/v1"
+
+
+@pytest.mark.no_mock_env
+def test_settings_with_defaults():
     """Test settings use defaults for optional fields."""
-    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
-    monkeypatch.setenv("TAVILY_API_KEY", "test-key")
-    monkeypatch.delenv("LANGCHAIN_PROJECT", raising=False)
+    settings = Settings(
+        groq_api_key="test-key",
+        tavily_api_key="test-key",
+        _env_file=None,
+    )
 
-    settings = Settings()
-
-    assert settings.default_model == "x-ai/grok-4.1-fast:free"
+    assert settings.default_model == "llama-3.3-70b-versatile"
     assert settings.max_cost_per_run == 2.0
-    assert settings.langchain_project == "market-intelligence-prod"
+    assert settings.langchain_project == "market-intelligence"
 
 
-def test_settings_with_missing_keys():
-    """Test settings when some keys are missing (should use defaults)."""
-    with patch.dict(
-        os.environ,
-        {"OPENROUTER_API_KEY": "test", "TAVILY_API_KEY": "test-tavily"},
-        clear=True,
-    ):
-        settings = Settings()
-        assert settings.openrouter_api_key == "test"
-        assert settings.tavily_api_key == "test-tavily"
-        assert (
-            settings.default_model == "x-ai/grok-4.1-fast:free"
-        )  # Falls back to default
+@pytest.mark.no_mock_env
+def test_settings_with_missing_llm_key():
+    """Test settings raise error when no LLM key configured."""
+    settings = Settings(
+        tavily_api_key="test-tavily",
+        _env_file=None,
+    )
+
+    with pytest.raises(ValueError, match="No LLM API key configured"):
+        _ = settings.llm_provider
 
 
-def test_openrouter_base_url():
-    """Test OpenRouter base URL property."""
-    # Use minimal valid settings
-    settings = Settings(openrouter_api_key="test", tavily_api_key="test")
-    assert settings.openrouter_base_url == "https://openrouter.ai/api/v1"
-
-
-def test_is_production_property(monkeypatch):
+@pytest.mark.no_mock_env
+def test_is_production_property():
     """Test is_production property works correctly."""
-    monkeypatch.setenv("OPENROUTER_API_KEY", "test")
-    monkeypatch.setenv("TAVILY_API_KEY", "test")
-
-    # Test development
-    monkeypatch.setenv("ENVIRONMENT", "development")
-    settings = Settings()
+    # Test development (default)
+    settings = Settings(
+        groq_api_key="test",
+        tavily_api_key="test",
+        environment="development",
+        _env_file=None,
+    )
     assert settings.is_production is False
 
     # Test production
-    monkeypatch.setenv("ENVIRONMENT", "production")
-    settings = Settings()
+    settings = Settings(
+        groq_api_key="test",
+        tavily_api_key="test",
+        environment="production",
+        _env_file=None,
+    )
     assert settings.is_production is True

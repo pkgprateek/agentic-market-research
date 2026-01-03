@@ -1,7 +1,6 @@
 """Writer Agent for generating professional market intelligence reports."""
 
 from datetime import datetime
-from typing import Optional
 
 from src.agents.base import BaseAgent
 from src.utils.cost_tracker import CostTracker
@@ -28,9 +27,9 @@ class WriterAgent(BaseAgent):
 
     def __init__(
         self,
-        model: Optional[str] = None,
+        model: str | None = None,
         temperature: float = 0.6,  # Higher for better writing quality
-        cost_tracker: Optional[CostTracker] = None,
+        cost_tracker: CostTracker | None = None,
     ):
         """
         Initialize Writer Agent.

@@ -1,7 +1,8 @@
 """Integration tests for workflow error handling and cost limits."""
 
-import pytest
 from unittest.mock import AsyncMock
+
+import pytest
 
 from src.workflows.market_analysis import MarketIntelligenceWorkflow
 
