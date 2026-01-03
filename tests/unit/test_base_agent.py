@@ -25,20 +25,21 @@ async def test_base_agent_initialization():
 
     with patch("src.agents.base.get_settings") as mock_settings:
         mock_settings.return_value = MagicMock(
-            default_model="x-ai/grok-4.1-fast:free",
-            openrouter_api_key="test-key",
-            openrouter_base_url="https://openrouter.ai/api/v1",
+            default_model="llama-3.3-70b-versatile",
+            llm_api_key="test-key",
+            llm_base_url="https://api.groq.com/openai/v1",
+            llm_provider="groq",
         )
 
         agent = MockAgent(
             name="TestAgent",
-            model="openai/gpt-5-mini",
+            model="llama-3.1-8b-instant",
             temperature=0.5,
             cost_tracker=tracker,
         )
 
         assert agent.name == "TestAgent"
-        assert agent.model_name == "openai/gpt-5-mini"
+        assert agent.model_name == "llama-3.1-8b-instant"
         assert agent.cost_tracker == tracker
 
 
@@ -47,14 +48,15 @@ async def test_base_agent_uses_default_model():
     """Test agent uses default model from config."""
     with patch("src.agents.base.get_settings") as mock_settings:
         mock_settings.return_value = MagicMock(
-            default_model="x-ai/grok-4.1-fast:free",
-            openrouter_api_key="test-key",
-            openrouter_base_url="https://openrouter.ai/api/v1",
+            default_model="llama-3.3-70b-versatile",
+            llm_api_key="test-key",
+            llm_base_url="https://api.groq.com/openai/v1",
+            llm_provider="groq",
         )
 
         agent = MockAgent(name="TestAgent")
 
-        assert agent.model_name == "x-ai/grok-4.1-fast:free"
+        assert agent.model_name == "llama-3.3-70b-versatile"
 
 
 @pytest.mark.asyncio
@@ -63,8 +65,9 @@ async def test_create_messages():
     with patch("src.agents.base.get_settings") as mock_settings:
         mock_settings.return_value = MagicMock(
             default_model="test-model",
-            openrouter_api_key="test-key",
-            openrouter_base_url="https://test.com",
+            llm_api_key="test-key",
+            llm_base_url="https://test.com",
+            llm_provider="groq",
         )
 
         agent = MockAgent(name="TestAgent")
@@ -84,14 +87,15 @@ async def test_get_cost_summary():
     with patch("src.agents.base.get_settings") as mock_settings:
         mock_settings.return_value = MagicMock(
             default_model="test-model",
-            openrouter_api_key="test-key",
-            openrouter_base_url="https://test.com",
+            llm_api_key="test-key",
+            llm_base_url="https://test.com",
+            llm_provider="groq",
         )
 
         agent = MockAgent(name="TestAgent", cost_tracker=tracker)
 
         # Track some usage
-        tracker.track_usage("openai/gpt-5-mini", 1000, 500)
+        tracker.track_usage("llama-3.3-70b-versatile", 1000, 500)
 
         summary = agent.get_cost_summary()
 

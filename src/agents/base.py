@@ -43,15 +43,15 @@ class BaseAgent(ABC):
         settings = get_settings()
         self.model_name = model or settings.default_model
 
-        # Initialize LLM via OpenRouter
+        # Initialize LLM (supports Groq or OpenRouter)
         self.llm = ChatOpenAI(
             model=self.model_name,
             temperature=temperature,
-            openai_api_key=settings.openrouter_api_key,  # type: ignore[call-arg]
-            openai_api_base=settings.openrouter_base_url,  # type: ignore[call-arg]
+            openai_api_key=settings.llm_api_key,  # type: ignore[call-arg]
+            openai_api_base=settings.llm_base_url,  # type: ignore[call-arg]
         )
 
-        logger.info(f"Initialized {name} with model {self.model_name}")
+        logger.info(f"Initialized {name} with model {self.model_name} via {settings.llm_provider}")
 
     @abstractmethod
     def get_system_prompt(self) -> str:
