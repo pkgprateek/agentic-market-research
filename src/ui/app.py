@@ -240,7 +240,7 @@ def render_footer() -> str:
     <div style="text-align: center; padding: 1.5rem 0; border-top: 1px solid {COLORS["border"]}; margin-top: 2rem;">
         <p style="margin: 0; font-size: 0.85rem; color: {COLORS["text_muted"]};">
             <span class="mdi mdi-graph" style="color: {COLORS["accent"]};"></span> LangGraph •
-            <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> OpenRouter •
+            <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> Groq •
             <span class="mdi mdi-magnify" style="color: {COLORS["accent"]};"></span> Tavily
         </p>
     </div>

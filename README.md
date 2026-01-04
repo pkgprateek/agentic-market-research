@@ -47,7 +47,7 @@ graph LR
 ## 🛠️ Tech Stack
 
 *   **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (State management & coordination)
-*   **LLM Integration:** [OpenRouter](https://openrouter.ai/) (Access to Claude 3.5 Sonnet, GPT-4o, etc.)
+*   **LLM Integration:** [Groq](https://groq.com/) (primary) or [OpenRouter](https://openrouter.ai/) (fallback)
 *   **Search:** [Tavily AI](https://tavily.com/) (Optimized for LLM research)
 *   **Frontend:** [Gradio](https://www.gradio.app/) (Interactive UI)
 
@@ -55,7 +55,7 @@ graph LR
 
 ### Prerequisites
 *   Python 3.12+
-*   API Keys: OpenRouter, Tavily
+*   API Keys: Groq (or OpenRouter), Tavily
 
 ### Local Installation
 
@@ -75,7 +75,7 @@ graph LR
 3.  **Configure credentials:**
     ```bash
     cp .env.example .env
-    # Edit .env with your OPENROUTER_API_KEY and TAVILY_API_KEY
+    # Edit .env with your GROQ_API_KEY and TAVILY_API_KEY
     ```
 
 4.  **Run the application:**

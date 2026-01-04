@@ -11,18 +11,19 @@ pinned: false
 
 # Agentic Market Research
 
-Multi-agent AI system for automated competitive intelligence. 80x faster than manual research.
+Enterprise-grade multi-agent AI system for automated competitive intelligence. **80x faster, 2000x cheaper** than manual research.
 
 ## What It Does
 
-Enter any company or product name → Get comprehensive market intelligence report in 15 minutes.
+Enter a company name → Get a comprehensive market intelligence report in ~15 minutes.
 
-**Includes:**
-- Competitor landscape analysis
-- SWOT assessment
+**Report includes:**
+- Company deep dive & business model
+- SWOT analysis
+- Competitive landscape
 - Market positioning
 - Strategic recommendations
-- Professional citations
+- Cited sources
 
 ## How It Works
 
@@ -36,15 +37,15 @@ Powered by LangGraph orchestration with real-time cost tracking.
 
 ## Cost
 
-- Free tier (Grok): $0.00
-- Production (Claude 4.5): $1-2 per analysis
+- Free tier (Groq): $0.00
+- Production (Claude/GPT-4): $1-2 per analysis
 
 vs $3,000 for manual research.
 
 ## Technology
 
 - LangGraph for multi-agent coordination
-- OpenRouter for LLM access (400+ models)
+- Groq (primary) or OpenRouter (fallback) for LLM access
 - Tavily API for web search
 - Gradio deployment
 

@@ -41,9 +41,7 @@ COLORS = {
     "info_bg": "rgba(59, 130, 246, 0.15)",
 }
 
-MDI_CDN = (
-    "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
-)
+MDI_CDN = "https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"
 
 # Container for consistent spacing
 CONTAINER = "max-width: 900px; margin: 0 auto; padding: 0 1.5rem;"
@@ -965,7 +963,7 @@ def render_footer() -> str:
     <div style="text-align: center; padding: 1.5rem 0; border-top: 1px solid {COLORS["border"]}; margin-top: 1rem;">
         <p style="margin: 0; font-size: 0.85rem; color: {COLORS["text_muted"]};">
             <span class="mdi mdi-graph" style="color: {COLORS["accent"]};"></span> LangGraph •
-            <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> OpenRouter •
+            <span class="mdi mdi-api" style="color: {COLORS["accent"]};"></span> Groq •
             <span class="mdi mdi-magnify" style="color: {COLORS["accent"]};"></span> Tavily
         </p>
     </div>
