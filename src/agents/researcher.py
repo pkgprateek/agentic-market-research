@@ -62,7 +62,7 @@ class ResearchAgent(BaseAgent):
         self,
         company_name: str,
         industry: str | None = None,
-        research_depth: str = "comprehensive",
+        research_depth: str = "basic",
     ) -> ResearchOutput:
         """
         Gather research data about a company using parallel operations.
