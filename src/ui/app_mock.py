@@ -1,15 +1,10 @@
-"""Enterprise-Grade UI Mock v3 — Best of Both Designs.
+"""Enterprise-Grade UI Mock using Gradio Components.
 
-Fixes in this version:
-1. Added shadows/effects to header and research cards (like am1)
-2. Removed History button (not in CLAUDE.md)
-3. Added "Generate Report" button
-4. Added Focus Areas accordion from CLAUDE.md F2
-5. Fixed report container alignment
-6. Fixed tabs alignment with rest of app
+This recreates exact UI from app_mock.py but uses Gradio components
+ONLY where workflow wiring is needed, while preserving exact visual design.
 
-Run: python -m src.ui.app_mock3
-Port: 7864
+Run: python -m src.ui.app_mock_gradio
+Port: 7865
 """
 
 import gradio as gr
@@ -70,41 +65,14 @@ h1, h2, h3, h4 {{
     font-weight: 600 !important;
 }}
 
-/* Buttons */
-button.primary {{
-    background: linear-gradient(135deg, {COLORS["accent"]} 0%, #0d9488 100%) !important;
-    border: none !important;
-    color: white !important;
-    font-weight: 600 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+/* Research Type Cards - Custom Radio Styling */
+.research-type-container {{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
 }}
 
-/* Small buttons */
-.btn-sm {{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    height: 36px;
-    padding: 0 0.875rem;
-    background: {COLORS["bg_secondary"]};
-    border: 1px solid {COLORS["border"]};
-    border-radius: 8px;
-    color: {COLORS["text_muted"]};
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-}}
-
-.btn-sm:hover {{
-    border-color: {COLORS["accent"]};
-    color: {COLORS["text_primary"]};
-}}
-
-/* Research Type Cards with shadow (like am1) */
-.research-card {{
+.research-type-card {{
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
@@ -117,20 +85,20 @@ button.primary {{
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }}
 
-.research-card:hover {{
+.research-type-card:hover {{
     border-color: {COLORS["accent"]};
     background: {COLORS["bg_elevated"]};
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }}
 
-.research-card.active {{
+.research-type-card.selected {{
     border-color: {COLORS["accent"]};
     background: {COLORS["accent_muted"]};
     box-shadow: 0 0 0 3px {COLORS["accent_muted"]}, 0 8px 24px rgba(20, 184, 166, 0.2);
 }}
 
-.research-card-icon {{
+.research-type-icon {{
     width: 36px;
     height: 36px;
     min-width: 36px;
@@ -141,39 +109,84 @@ button.primary {{
     justify-content: center;
 }}
 
-.research-card-icon .mdi {{
+.research-type-icon .mdi {{
     font-size: 1.25rem;
     color: {COLORS["accent"]};
 }}
 
-.research-card-title {{
+.research-type-title {{
     font-weight: 600;
     font-size: 0.9rem;
     color: {COLORS["text_primary"]};
     margin-bottom: 0.125rem;
 }}
 
-.research-card-desc {{
+.research-type-desc {{
     font-size: 0.75rem;
     color: {COLORS["text_muted"]};
     line-height: 1.3;
 }}
 
-/* Cards */
-.card {{
-    background: {COLORS["bg_card"]};
-    border: 1px solid {COLORS["border"]};
-    border-radius: 12px;
-    padding: 1.25rem;
-}}
-
-/* Source Card */
-.source-card {{
+/* Focus Areas - Accordion Styling */
+.focus-areas {{
     background: {COLORS["bg_secondary"]};
     border: 1px solid {COLORS["border"]};
     border-radius: 10px;
-    padding: 1rem;
-    margin: 0.75rem 0;
+}}
+
+.focus-areas summary {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    list-style: none;
+}}
+
+.focus-areas summary::-webkit-details-marker {{
+    display: none;
+}}
+
+.focus-areas summary:hover {{
+    background: {COLORS["bg_elevated"]};
+    border-radius: 10px;
+}}
+
+.focus-areas[open] summary {{
+    border-bottom: 1px solid {COLORS["border"]};
+    border-radius: 10px 10px 0 0;
+}}
+
+.focus-accordion .label {{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+    color: {COLORS["text_primary"]};
+    font-size: 0.9rem;
+}}
+
+.focus-checkbox-group {{
+    padding: 0.5rem 0;
+}}
+
+.focus-checkbox {{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}}
+
+.focus-checkbox:hover {{
+    background: {COLORS["bg_elevated"]};
+}}
+
+.focus-checkbox input {{
+    width: 16px;
+    height: 16px;
+    accent-color: {COLORS["accent"]};
 }}
 
 /* Progress */
@@ -225,26 +238,6 @@ button.primary {{
     border-radius: 12px;
     padding: 1.25rem;
     margin: 2rem 0;
-}}
-
-/* Export buttons */
-.export-btn {{
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.4rem;
-    height: 40px;
-    padding: 0 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-}}
-
-.export-btn:hover {{
-    transform: translateY(-1px);
 }}
 
 /* Gaps */
@@ -343,55 +336,6 @@ button.primary {{
     color: {COLORS["text_secondary"]};
 }}
 
-/* Focus Areas - uses details/summary for native collapse */
-.focus-areas {{
-    background: {COLORS["bg_secondary"]};
-    border: 1px solid {COLORS["border"]};
-    border-radius: 10px;
-    margin-top: 1rem;
-}}
-
-.focus-areas summary {{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    list-style: none;
-}}
-
-.focus-areas summary::-webkit-details-marker {{
-    display: none;
-}}
-
-.focus-areas summary:hover {{
-    background: {COLORS["bg_elevated"]};
-    border-radius: 10px;
-}}
-
-.focus-areas[open] summary {{
-    border-bottom: 1px solid {COLORS["border"]};
-    border-radius: 10px 10px 0 0;
-}}
-
-.focus-checkbox {{
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-}}
-
-.focus-checkbox:hover {{
-    background: {COLORS["bg_elevated"]};
-}}
-
-.focus-checkbox input {{
-    width: 16px;
-    height: 16px;
-    accent-color: {COLORS["accent"]};
-}}
-
 /* Tabs alignment - wrap content in container */
 .tabs {{
     {CONTAINER}
@@ -435,6 +379,94 @@ button.primary {{
 
 /* Animations */
 @keyframes spin {{ 0% {{ transform: rotate(0deg); }} 100% {{ transform: rotate(360deg); }} }}
+
+/* Gradio Component Overrides - Match HTML exactly */
+input[type="text"], input[type="search"], textarea {{
+    background: {COLORS["bg_secondary"]} !important;
+    border: 1px solid {COLORS["border"]} !important;
+    border-radius: 10px !important;
+    color: {COLORS["text_primary"]} !important;
+    font-size: 1rem !important;
+    padding: 0.75rem 1rem !important;
+    height: 48px !important;
+    width: 100% !important;
+}}
+
+input[type="text"]:focus, input[type="search"]:focus, textarea:focus {{
+    border-color: {COLORS["accent"]} !important;
+    outline: none !important;
+    box-shadow: 0 0 0 2px {COLORS["accent_muted"]} !important;
+}}
+
+input::placeholder, textarea::placeholder {{
+    color: {COLORS["text_muted"]} !important;
+}}
+
+/* Primary buttons */
+button.primary, button.lg {{
+    background: linear-gradient(135deg, {COLORS["accent"]} 0%, #0d9488 100%) !important;
+    border: none !important;
+    height: 48px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3) !important;
+    width: 100% !important;
+}}
+
+button.primary:hover, button.lg:hover {{
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 16px rgba(20, 184, 166, 0.4) !important;
+}}
+
+/* Secondary buttons */
+.btn-sm {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    height: 36px;
+    padding: 0 0.875rem;
+    background: {COLORS["bg_secondary"]};
+    border: 1px solid {COLORS["border"]};
+    border-radius: 8px;
+    color: {COLORS["text_muted"]};
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+}}
+
+.btn-sm:hover {{
+    border-color: {COLORS["accent"]};
+    color: {COLORS["text_primary"]};
+}}
+
+/* Export buttons */
+.export-btn {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 40px;
+    padding: 0 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+}}
+
+.export-btn:hover {{
+    transform: translateY(-1px);
+}}
+
+/* Row layout for inputs */
+.gr-row {{
+    gap: 0.75rem !important;
+}}
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -450,7 +482,6 @@ RESEARCH_TYPES = [
     ("Custom Query", "help-circle", "Free-form research"),
 ]
 
-# From CLAUDE.md F2
 FOCUS_AREAS = [
     ("Products & Services", "Product offerings, features, and service portfolio", True),
     ("Pricing", "Pricing models, tiers, and competitive positioning", False),
@@ -484,7 +515,7 @@ MOCK_SOURCES = [
         "date": "Dec 2024",
         "freshness": "fresh",
         "confidence": "medium",
-        "snippet": "BYD overtook Tesla in quarterly deliveries for the first time.",
+        "snippet": "BYD overtook Tesla in quarterly deliveries for first time.",
         "description": "Competitive analysis comparing delivery numbers and market positioning",
     },
 ]
@@ -540,7 +571,7 @@ Tesla maintains leadership in US EV market (55% share) but faces increasing pres
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
-# UI Components
+# Helper Functions
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -556,13 +587,13 @@ def render_base() -> str:
 def render_header() -> str:
     """Header with transparent background - gradient comes from page."""
     return f"""
-    <div style="background: transparent; 
+    <div style="background: transparent;
                 padding: 1.25rem 0;
                 box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);">
         <div style="{CONTAINER}">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <div style="background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); 
-                            width: 44px; height: 44px; border-radius: 12px; 
+                <div style="background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488);
+                            width: 44px; height: 44px; border-radius: 12px;
                             display: flex; align-items: center; justify-content: center;
                             box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);">
                     <span class="mdi mdi-chart-timeline-variant-shimmer" style="color: white; font-size: 1.5rem;"></span>
@@ -581,19 +612,19 @@ def render_header() -> str:
     """
 
 
-def render_research_types() -> str:
-    """Research type cards (3x2 grid with shadows)."""
+def render_research_types_html() -> str:
+    """Research type cards as HTML (Gradio doesn't support custom card components)."""
     cards = ""
     for i, (name, icon, desc) in enumerate(RESEARCH_TYPES):
-        active = "active" if i == 0 else ""
+        active = "selected" if i == 0 else ""
         cards += f"""
-        <div class="research-card {active}">
-            <div class="research-card-icon">
+        <div class="research-type-card {active}" data-index="{i}">
+            <div class="research-type-icon">
                 <span class="mdi mdi-{icon}"></span>
             </div>
             <div>
-                <div class="research-card-title">{name}</div>
-                <div class="research-card-desc">{desc}</div>
+                <div class="research-type-title">{name}</div>
+                <div class="research-type-desc">{desc}</div>
             </div>
         </div>
         """
@@ -605,76 +636,9 @@ def render_research_types() -> str:
                 <span class="mdi mdi-format-list-bulleted-type" style="color: {COLORS["accent"]}; font-size: 1.25rem;"></span>
                 <span style="font-weight: 600; color: {COLORS["text_primary"]};">What do you need?</span>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+            <div class="research-type-container">
                 {cards}
             </div>
-        </div>
-    </div>
-    """
-
-
-def render_input_section() -> str:
-    """Input with Focus Areas accordion."""
-    # Build focus area checkboxes
-    focus_items = ""
-    for name, desc, checked in FOCUS_AREAS:
-        checked_attr = "checked" if checked else ""
-        focus_items += f"""
-        <label class="focus-checkbox">
-            <input type="checkbox" {checked_attr}>
-            <div>
-                <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">{name}</div>
-                <div style="font-size: 0.75rem; color: {COLORS["text_muted"]};">{desc}</div>
-            </div>
-        </label>
-        """
-
-    return f"""
-    <div style="padding: 0 0 1.5rem;">
-        <div style="{CONTAINER}">
-            <!-- Company Input -->
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: {COLORS["text_secondary"]}; font-weight: 500;">
-                    Company Name
-                </label>
-                <div style="position: relative;">
-                    <input type="text" value="Tesla" placeholder="Enter company name..."
-                           style="width: 100%; height: 48px; padding: 0 1rem 0 2.75rem; font-size: 1rem; 
-                                  background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]}; 
-                                  border-radius: 10px; color: {COLORS["text_primary"]};">
-                    <span class="mdi mdi-magnify" style="position: absolute; left: 1rem; top: 50%; 
-                          transform: translateY(-50%); color: {COLORS["text_muted"]}; font-size: 1.25rem;"></span>
-                </div>
-            </div>
-            
-            <!-- Focus Areas Accordion (collapsed by default) -->
-            <details class="focus-areas">
-                <summary>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span class="mdi mdi-tune" style="color: {COLORS["accent"]};"></span>
-                        <span style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">Focus Areas</span>
-                        <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">({sum(1 for _, _, c in FOCUS_AREAS if c)} selected)</span>
-                    </div>
-                    <span class="mdi mdi-chevron-down" style="color: {COLORS["text_muted"]};"></span>
-                </summary>
-                <div style="padding: 0.5rem 0;">
-                    {focus_items}
-                </div>
-            </details>
-            
-            <!-- Advanced Settings Button -->
-            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                <button class="btn-sm"><span class="mdi mdi-cog"></span> Advanced Settings</button>
-            </div>
-            
-            <!-- Generate Button -->
-            <button style="width: 100%; height: 48px; margin-top: 1rem; 
-                           background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488); 
-                           border: none; border-radius: 10px; color: white; font-weight: 600; font-size: 1rem;
-                           cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-                           box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); transition: all 0.2s;">
-                <span class="mdi mdi-play"></span> Generate Report
-            </button>
         </div>
     </div>
     """
@@ -695,21 +659,6 @@ def render_progress() -> str:
             <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: {COLORS["text_muted"]};">
                 Gathering sources • Analyzing competitors • Generating report
             </p>
-        </div>
-    </div>
-    """
-
-
-def render_report_header() -> str:
-    """Report header inside container."""
-    return f"""
-    <div style="{CONTAINER}">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="margin: 0; font-size: 1rem; color: {COLORS["text_primary"]}; display: flex; align-items: center; gap: 0.5rem;">
-                <span class="mdi mdi-file-document-outline" style="color: {COLORS["accent"]};"></span>
-                Analysis Report
-            </h3>
-            <span class="badge badge-success"><span class="mdi mdi-check-circle"></span> Complete</span>
         </div>
     </div>
     """
@@ -821,7 +770,7 @@ def render_hitl() -> str:
             <h3 style="margin: 0; font-size: 0.9rem; color: {COLORS["text_primary"]};">Human Review Checkpoint</h3>
         </div>
         <p style="margin: 0 0 0.75rem; color: {COLORS["text_secondary"]}; font-size: 0.85rem;">
-            Review the analysis before finalizing.
+            Review analysis before finalizing.
         </p>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <button class="export-btn" style="background: linear-gradient(135deg, {COLORS["success"]}, #059669); color: white;">
@@ -856,7 +805,7 @@ def render_export() -> str:
 
 
 def render_full_report() -> str:
-    """Render the complete report inside a single card container.
+    """Render complete report inside a single card container.
 
     Converts markdown to HTML so Executive Summary stays inside the card.
     """
@@ -970,34 +919,99 @@ def render_footer() -> str:
     """
 
 
+def create_focus_areas_html_content() -> str:
+    """Create Focus Areas checkbox content (without wrapper)."""
+    focus_items = ""
+    for name, desc, checked in FOCUS_AREAS:
+        checked_attr = "checked" if checked else ""
+        focus_items += f"""
+        <label class="focus-checkbox">
+            <input type="checkbox" {checked_attr}>
+            <div>
+                <div style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">{name}</div>
+                <div style="font-size: 0.75rem; color: {COLORS["text_muted"]};">{desc}</div>
+            </div>
+        </label>
+        """
+    return focus_items
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Main Application
 # ─────────────────────────────────────────────────────────────────────────────
 
 
-def create_mock_ui() -> gr.Blocks:
-    """Create UI with all fixes."""
+def create_mock_gradio_ui() -> gr.Blocks:
+    """Create UI using Gradio components where workflow wiring is needed."""
 
     with gr.Blocks() as app:
-        # Base
+        # Base styles
         gr.HTML(render_base())
 
-        # Header with shadow
+        # Header
         gr.HTML(render_header())
 
-        # Research Types (3x2 grid with shadows)
-        gr.HTML(render_research_types())
+        # Research Types (HTML - Gradio doesn't support custom cards)
+        gr.HTML(render_research_types_html())
 
-        # Input with Focus Areas and Generate button
-        gr.HTML(render_input_section())
+        # Input Section - Keep exact HTML from app_mock.py
+        gr.HTML(f"""
+        <div style="padding: 0 0 1.5rem;">
+            <div style="{CONTAINER}">
+                <!-- Company Input -->
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: {COLORS["text_secondary"]}; font-weight: 500;">
+                        Company Name
+                    </label>
+                    <div style="position: relative;">
+                        <input type="text" id="company-input" value="Tesla" placeholder="Enter company name..."
+                               style="width: 100%; height: 48px; padding: 0 1rem 0 3rem; font-size: 1rem;
+                                      background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]};
+                                      border-radius: 10px; color: {COLORS["text_primary"]};">
+                        <span class="mdi mdi-magnify" style="position: absolute; right: 1rem; top: 50%;
+                          transform: translateY(-50%); color: {COLORS["text_muted"]}; font-size: 1.25rem;"></span>
+                    </div>
+                </div>
+                
+                <!-- Focus Areas Accordion (collapsed by default) -->
+                <details class="focus-areas">
+                    <summary>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="mdi mdi-tune" style="color: {COLORS["accent"]};"></span>
+                            <span style="font-weight: 500; color: {COLORS["text_primary"]}; font-size: 0.9rem;">Focus Areas</span>
+                            <span style="font-size: 0.75rem; color: {COLORS["text_muted"]};">({sum(1 for _, _, c in FOCUS_AREAS if c)} selected)</span>
+                        </div>
+                        <span class="mdi mdi-chevron-down" style="color: {COLORS["text_muted"]};"></span>
+                    </summary>
+                    <div style="padding: 0.5rem 0;">
+                        {create_focus_areas_html_content()}
+                    </div>
+                </details>
+                
+                <!-- Advanced Settings Button -->
+                <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                    <button class="btn-sm"><span class="mdi mdi-cog"></span> Advanced Settings</button>
+                </div>
+                
+                <!-- Generate Button -->
+                <button id="generate-btn" style="width: 100%; height: 48px; margin-top: 1rem;
+                               background: linear-gradient(135deg, {COLORS["accent"]}, #0d9488);
+                               border: none; border-radius: 10px; color: white; font-weight: 600; font-size: 1rem;
+                               cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+                               box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3); transition: all 0.2s;">
+                    <span class="mdi mdi-play"></span> Generate Report
+                </button>
+            </div>
+        </div>
+        """)
 
         # Progress
         gr.HTML(render_progress())
 
-        # Spacer before tabs - reduced to 30% of original
-        gr.HTML("<div style='padding: 0.45rem 0;'></div>")
+        # Spacer before tabs
+        gr.HTML("<div style='padding: 0.5rem 0;'></div>")
 
-        # Tabs - wrapped in container for alignment
+        # Report Tabs
         gr.HTML(f"<div style='{CONTAINER}'>")
         with gr.Tabs():
             with gr.TabItem("Report"):
@@ -1019,13 +1033,56 @@ def create_mock_ui() -> gr.Blocks:
         # Footer
         gr.HTML(render_footer())
 
+        # Hidden Gradio components for workflow wiring
+        # These components are not displayed but can be used for workflow integration
+        company_name_hidden = gr.Textbox(
+            value="Tesla", visible=False, elem_id="company-name-hidden"
+        )
+        focus_areas_hidden = gr.CheckboxGroup(
+            choices=[name for name, _, _ in FOCUS_AREAS],
+            value=[name for name, _, checked in FOCUS_AREAS if checked],
+            visible=False,
+            elem_id="focus-areas-hidden",
+        )
+        generate_btn_hidden = gr.Button(
+            "Generate Report", visible=False, elem_id="generate-btn-hidden"
+        )
+        export_pdf_hidden = gr.Button("Export PDF", visible=False, elem_id="export-pdf-hidden")
+        export_csv_hidden = gr.Button("Export CSV", visible=False, elem_id="export-csv-hidden")
+        copy_hidden = gr.Button("Copy", visible=False, elem_id="copy-hidden")
+        share_hidden = gr.Button("Share", visible=False, elem_id="share-hidden")
+
+        # JavaScript to sync HTML elements with hidden Gradio components
+        gr.HTML("""
+        <script>
+        // Sync company input
+        document.getElementById('company-input').addEventListener('input', (e) => {
+            document.getElementById('company-name-hidden').value = e.target.value;
+            document.getElementById('company-name-hidden').dispatchEvent(new Event('input'));
+        });
+
+        // Sync generate button
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            document.getElementById('generate-btn-hidden').click();
+        });
+
+        // Sync export buttons
+        document.querySelectorAll('.export-btn').forEach((btn, index) => {
+            const hiddenBtns = ['export-pdf-hidden', 'export-csv-hidden', 'copy-hidden', 'share-hidden'];
+            btn.addEventListener('click', () => {
+                document.getElementById(hiddenBtns[index]).click();
+            });
+        });
+        </script>
+        """)
+
     return app
 
 
 if __name__ == "__main__":
-    app = create_mock_ui()
+    app = create_mock_gradio_ui()
     print("\n" + "=" * 60)
-    print("  MARKET INTELLIGENCE UI v3")
-    print("  URL: http://127.0.0.1:7864")
+    print("  MARKET INTELLIGENCE UI - Gradio Components")
+    print("  URL: http://127.0.0.1:7865")
     print("=" * 60 + "\n")
-    app.launch(server_name="127.0.0.1", server_port=7864, share=False)
+    app.launch(server_name="127.0.0.1", server_port=7865, share=False, css=THEME_CSS)

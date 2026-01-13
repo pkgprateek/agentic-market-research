@@ -485,7 +485,7 @@ def render_input_section() -> str:
                 </label>
                 <div style="position: relative;">
                     <input type="text" id="company-input" placeholder="Enter company name..."
-                           style="width: 100%; height: 48px; padding: 0 3rem 0 1rem; font-size: 1rem;
+                           style="width: 100%; height: 48px; padding: 0 1rem 0 3rem; font-size: 1rem;
                                   background: {COLORS["bg_secondary"]}; border: 1px solid {COLORS["border"]};
                                   border-radius: 10px; color: {COLORS["text_primary"]};">
                     <span class="mdi mdi-magnify" style="position: absolute; right: 1rem; top: 50%;
@@ -715,23 +715,61 @@ def create_ui() -> gr.Blocks:
             outputs=[report_output, sources_output],
         )
 
-        # JavaScript to sync HTML inputs with hidden Gradio components
+        # JavaScript bridge - wait for Gradio to render, then connect
         gr.HTML("""
         <script>
-        // Sync company input to hidden textbox
-        document.getElementById('company-input').addEventListener('input', (e) => {
-            const hidden = document.querySelector('#company-hidden textarea');
-            if (hidden) {
-                hidden.value = e.target.value;
-                hidden.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        });
+        // Wait for Gradio to fully render, then setup the bridge
+        function setupBridge() {
+            const companyInput = document.getElementById('company-input');
+            const generateBtn = document.getElementById('generate-btn');
 
-        // Sync generate button click
-        document.getElementById('generate-btn').addEventListener('click', () => {
-            const hiddenBtn = document.querySelector('#generate-hidden button');
-            if (hiddenBtn) hiddenBtn.click();
-        });
+            // Find hidden Gradio components (Gradio 6.x structure)
+            const hiddenTextarea = document.querySelector('#company-hidden input, #company-hidden textarea');
+            const hiddenButton = document.querySelector('#generate-hidden button');
+
+            if (!companyInput || !generateBtn) {
+                console.log('Waiting for HTML elements...');
+                setTimeout(setupBridge, 100);
+                return;
+            }
+
+            if (!hiddenTextarea || !hiddenButton) {
+                console.log('Waiting for Gradio hidden components...');
+                setTimeout(setupBridge, 100);
+                return;
+            }
+
+            console.log('Bridge connected!');
+
+            // Sync input value on every keystroke
+            companyInput.addEventListener('input', (e) => {
+                hiddenTextarea.value = e.target.value;
+                hiddenTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            // Sync on blur for safety
+            companyInput.addEventListener('blur', (e) => {
+                hiddenTextarea.value = e.target.value;
+                hiddenTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+
+            // Click hidden button when HTML button is clicked
+            generateBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Final sync before click
+                hiddenTextarea.value = companyInput.value;
+                hiddenTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+                // Small delay to ensure value is set
+                setTimeout(() => hiddenButton.click(), 50);
+            });
+        }
+
+        // Start setup when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(setupBridge, 500));
+        } else {
+            setTimeout(setupBridge, 500);
+        }
         </script>
         """)
 
