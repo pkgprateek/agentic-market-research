@@ -1,6 +1,10 @@
-"""Search tools for web research using Tavily API."""
+"""Search tools for web research using Tavily API.
 
-from tavily import TavilyClient  # type: ignore[import-untyped]
+Uses AsyncTavilyClient for non-blocking I/O — critical for parallelizing
+multiple search queries with asyncio.gather.
+"""
+
+from tavily import AsyncTavilyClient  # type: ignore[import-untyped]
 
 from src.utils.config import get_settings
 from src.utils.logging import setup_logger
@@ -10,24 +14,24 @@ logger = setup_logger(__name__)
 
 class TavilySearchTool:
     """
-    Wrapper for Tavily search API optimized for research agents.
+    Async wrapper for Tavily search API optimized for research agents.
 
-    Tavily is designed for AI agents and provides clean, structured
-    results ideal for LLM consumption.
+    Uses AsyncTavilyClient for true async I/O, enabling concurrent
+    requests via asyncio.gather for faster research.
     """
 
     def __init__(self, api_key: str | None = None):
         """
-        Initialize Tavily search tool.
+        Initialize Tavily search tool with async client.
 
         Args:
             api_key: Optional Tavily API key (uses config if None)
         """
         settings = get_settings()
         self.api_key = api_key or settings.tavily_api_key
-        self.client = TavilyClient(api_key=self.api_key)
+        self.client = AsyncTavilyClient(api_key=self.api_key)
 
-        logger.info("Tavily search tool initialized")
+        logger.info("Tavily async search tool initialized")
 
     async def search(
         self,
@@ -38,7 +42,7 @@ class TavilySearchTool:
         exclude_domains: list[str] | None = None,
     ) -> dict:
         """
-        Perform web search using Tavily.
+        Perform async web search using Tavily.
 
         Args:
             query: Search query
@@ -54,9 +58,10 @@ class TavilySearchTool:
                 - answer: Tavily's AI-generated answer (if available)
         """
         try:
-            logger.info(f"Tavily search: {query}")
+            logger.info(f"Tavily async search: {query}")
 
-            response = self.client.search(
+            # AsyncTavilyClient.search is a coroutine
+            response = await self.client.search(
                 query=query,
                 max_results=max_results,
                 search_depth=search_depth,

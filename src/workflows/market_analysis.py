@@ -46,15 +46,9 @@ class MarketIntelligenceWorkflow:
         self.model_name = model_name
 
         # Initialize agents (shared cost tracker)
-        self.research_agent = ResearchAgent(
-            cost_tracker=self.cost_tracker, model=model_name
-        )
-        self.analysis_agent = AnalysisAgent(
-            cost_tracker=self.cost_tracker, model=model_name
-        )
-        self.writer_agent = WriterAgent(
-            cost_tracker=self.cost_tracker, model=model_name
-        )
+        self.research_agent = ResearchAgent(cost_tracker=self.cost_tracker, model=model_name)
+        self.analysis_agent = AnalysisAgent(cost_tracker=self.cost_tracker, model=model_name)
+        self.writer_agent = WriterAgent(cost_tracker=self.cost_tracker, model=model_name)
 
         # Build workflow graph blueprint
         self.graph_builder = self._build_graph()
@@ -102,7 +96,7 @@ class MarketIntelligenceWorkflow:
             research_results = await self.research_agent.run(
                 company_name=state["company_name"],
                 industry=state.get("industry"),
-                research_depth=state.get("research_depth", "comprehensive"),
+                research_depth=state.get("research_depth", "basic"),
             )
 
             # Update state
@@ -131,9 +125,7 @@ class MarketIntelligenceWorkflow:
             self.cost_tracker.check_budget(self.max_budget)
 
             # Run analysis agent
-            analysis_results = await self.analysis_agent.run(
-                research_data=state["research_data"]
-            )
+            analysis_results = await self.analysis_agent.run(research_data=state["research_data"])
 
             # Update state
             return {
@@ -141,9 +133,7 @@ class MarketIntelligenceWorkflow:
                 "swot": analysis_results.get("swot", ""),
                 "competitive_matrix": analysis_results.get("competitive_matrix", ""),
                 "positioning": analysis_results.get("positioning", ""),
-                "strategic_recommendations": analysis_results.get(
-                    "strategic_recommendations", ""
-                ),
+                "strategic_recommendations": analysis_results.get("strategic_recommendations", ""),
             }
 
         except BudgetExceededError as e:
@@ -172,9 +162,7 @@ class MarketIntelligenceWorkflow:
                     "swot": state.get("swot", ""),
                     "competitive_matrix": state.get("competitive_matrix", ""),
                     "positioning": state.get("positioning", ""),
-                    "strategic_recommendations": state.get(
-                        "strategic_recommendations", ""
-                    ),
+                    "strategic_recommendations": state.get("strategic_recommendations", ""),
                 },
             )
 
@@ -247,7 +235,7 @@ class MarketIntelligenceWorkflow:
         company_name: str,
         industry: str | None = None,
         thread_id: str | None = None,
-        research_depth: str = "comprehensive",
+        research_depth: str = "basic",
         research_type: ResearchType = ResearchType.COMPANY_ANALYSIS,
     ) -> dict:
         """
@@ -306,9 +294,7 @@ class MarketIntelligenceWorkflow:
                 workflow = self.graph_builder.compile(checkpointer=memory_checkpointer)
                 final_state = await workflow.ainvoke(initial_state, config)  # type: ignore[arg-type]
             else:
-                async with AsyncSqliteSaver.from_conn_string(
-                    self.checkpoint_path
-                ) as checkpointer:
+                async with AsyncSqliteSaver.from_conn_string(self.checkpoint_path) as checkpointer:
                     workflow = self.graph_builder.compile(checkpointer=checkpointer)
                     final_state = await workflow.ainvoke(initial_state, config)  # type: ignore[arg-type]
 
