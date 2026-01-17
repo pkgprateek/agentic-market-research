@@ -1,116 +1,125 @@
-# Agentic Market Research Orchestrator
+# Agentic Market Research
 
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/pkgprateek/agentic-market-research)
-
-> **Enterprise-grade multi-agent system for automated competitive intelligence.**  
-> Delivers comprehensive market research reports in 15 minutes at <1% of the cost of traditional methods.
+> **Enterprise-grade AI-powered competitive intelligence.**  
+> 80x faster, 2000x cheaper than manual research.
 
 ---
 
-## 🚀 Overview
+## Overview
 
-The **Agentic Market Research Orchestrator** is a sophisticated AI system designed to automate the labor-intensive process of competitive market analysis. By orchestrating a team of specialized AI agents, it transforms a simple company name into a strategic intelligence report, covering SWOT analysis, competitor landscape, and market positioning.
+The **Agentic Market Research** system automates competitive market analysis through orchestrated AI agents. Enter a company name, get a comprehensive intelligence report in minutes.
 
-**Key Value Proposition:**
-*   **Speed:** Reduces research time from 20+ hours to ~15 minutes (80x faster).
-*   **Cost Efficiency:** Lowers cost from ~$3,000 to $0.50-$2.00 per report (1500x cheaper).
-*   **Scalability:** Standardized, reproducible outputs suitable for high-volume analysis.
+**Value Proposition:**
+- **Speed:** 20+ hours → ~15 minutes (80x faster)
+- **Cost:** ~$3,000 → $0.50-$2.00 per report (1500x cheaper)
+- **Consistency:** Standardized, reproducible outputs
 
-## 🏗️ Architecture
+## Architecture
 
-The system utilizes a **LangGraph** state machine to coordinate three specialized agents, ensuring a robust and fault-tolerant workflow.
-
-```mermaid
-graph LR
-    Input[User Input] --> Research[Research Agent]
-    Research --> Analysis[Analysis Agent]
-    Analysis --> Writer[Writer Agent]
-    Writer --> Report[Final Intelligence Report]
-    
-    Research -.->|Tavily API| Web[Live Web Search]
-    Analysis -.->|LLM| Inference[Contextual Analysis]
-    Writer -.->|LLM| Formatting[Markdown Generation]
-    
-    style Research fill:#e1f5fe,stroke:#01579b
-    style Analysis fill:#fff3e0,stroke:#ef6c00
-    style Writer fill:#f3e5f5,stroke:#7b1fa2
+```
+Frontend (Vercel)          Backend (VPS)
++------------------+       +------------------+
+| React 18 + Vite  | <---> | Python 3.12      |
+| Tailwind CSS     |       | FastAPI          |
+| shadcn/ui        |       | AI Agents        |
++------------------+       +------------------+
+                                   |
+                                   v
+                           +------------------+
+                           | LLM APIs         |
+                           | Search APIs      |
+                           +------------------+
 ```
 
-### Agent Roles
-1.  **Research Agent:** Executes targeted web searches using Tavily API to gather raw data on competitors, pricing, and features.
-2.  **Analysis Agent:** Synthesizes raw data into structured insights, performing SWOT and gap analysis.
-3.  **Writer Agent:** Compiles insights into a professional, citation-backed Markdown report.
+## Tech Stack
 
-## 🛠️ Tech Stack
+### Frontend (Vercel)
+- React 18 (no Next.js)
+- Vite
+- Tailwind CSS
+- shadcn/ui
+- Material Design Icons (mdi)
+- React Router
+- Context API
 
-*   **Orchestration:** [LangGraph](https://langchain-ai.github.io/langgraph/) (State management & coordination)
-*   **LLM Integration:** [Groq](https://groq.com/) (primary) or [OpenRouter](https://openrouter.ai/) (fallback)
-*   **Search:** [Tavily AI](https://tavily.com/) (Optimized for LLM research)
-*   **Frontend:** [Gradio](https://www.gradio.app/) (Interactive UI)
+### Backend (VPS)
+- Python 3.12
+- FastAPI
+- reportlab (PDF generation)
+- mypy (type checking)
+- pytest (testing)
 
-## ⚡ Quick Start
+### Package Management
+- pnpm (frontend)
+- uv (Python)
+
+## Project Structure
+
+```
+agentic-market-research/
+├── frontend/           # React + Vite application
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── context/
+│   │   └── lib/
+│   └── package.json
+├── backend/            # Python FastAPI application
+│   ├── app/
+│   │   ├── api/
+│   │   ├── agents/
+│   │   ├── services/
+│   │   └── models/
+│   └── pyproject.toml
+├── docs/               # Documentation
+│   ├── FEATURES.md
+│   └── FUTURE_FEATURES.md
+└── AGENTS.md           # Project rules and conventions
+```
+
+## Getting Started
 
 ### Prerequisites
-*   Python 3.12+
-*   API Keys: Groq (or OpenRouter), Tavily
+- Node.js 20+
+- Python 3.12+
+- pnpm
+- uv
 
-### Local Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/pkgprateek/agentic-market-research.git
-    cd agentic-market-research
-    ```
-
-2.  **Set up environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate
-    make install
-    ```
-
-3.  **Configure credentials:**
-    ```bash
-    cp .env.example .env
-    # Edit .env with your GROQ_API_KEY and TAVILY_API_KEY
-    ```
-
-4.  **Run the application:**
-    ```bash
-    make run
-    # Open http://localhost:7860
-    ```
-
-## 🧪 Testing & Quality Assurance
-
-This project maintains high code quality standards with comprehensive testing and linting.
+### Development
 
 ```bash
-make check   # Run all checks (lint + typecheck + test)
-make test    # Run tests only
-make lint    # Lint only
+# Frontend
+cd frontend
+pnpm install
+pnpm dev
+
+# Backend
+cd backend
+uv sync
+uv run uvicorn app.main:app --reload
 ```
 
-## 📊 Performance Metrics
+## Features
 
-| Metric | Manual Analyst | Agentic Orchestrator | Improvement |
-| :--- | :--- | :--- | :--- |
-| **Time to Report** | 20 Hours | 15 Minutes | **80x** |
-| **Cost per Report** | ~$3,000 | ~$1.50 | **2000x** |
-| **Consistency** | Variable | High | **Standardized** |
+See [docs/FEATURES.md](docs/FEATURES.md) for implementation roadmap.
 
-## 🤝 Contributing
+**Current Scope (9 features):**
+1. Research Type Selection
+2. Company Analysis
+3. Competitive Comparison
+4. Confidence Scoring
+5. Source Freshness
+6. Intelligence Gaps
+7. Actionable Recommendations
+8. HITL: Research Checkpoint
+9. PDF Export
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+**Future Features:** See [docs/FUTURE_FEATURES.md](docs/FUTURE_FEATURES.md)
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT
 
 ---
 
-**Built by Prateek Kumar Goel**  
-[GitHub](https://github.com/pkgprateek) | [LinkedIn](https://linkedin.com/in/pkgprateek)
+**Built by Prateek Kumar Goel**
