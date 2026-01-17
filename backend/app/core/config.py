@@ -5,8 +5,12 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # API Keys
-    openai_api_key: str = ""
+    groq_api_key: str = ""
+    openrouter_api_key: str = ""
     tavily_api_key: str = ""
+
+    # Model Configuration
+    default_model: str = "llama-3.3-70b-versatile"
 
     # Application
     environment: str = "development"
@@ -17,6 +21,20 @@ class Settings(BaseSettings):
 
     # Cost limits
     max_cost_per_run: float = 2.0
+
+    @property
+    def llm_api_key(self) -> str:
+        """Return the active LLM API key (Groq preferred, fallback to OpenRouter)."""
+        return self.groq_api_key or self.openrouter_api_key
+
+    @property
+    def llm_provider(self) -> str:
+        """Return the active LLM provider name."""
+        if self.groq_api_key:
+            return "groq"
+        elif self.openrouter_api_key:
+            return "openrouter"
+        return "none"
 
     class Config:
         env_file = ".env"

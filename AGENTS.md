@@ -139,10 +139,12 @@ VITE_API_URL=             # Optional, defaults to /api (uses Vite proxy)
 ### Backend (.env)
 ```
 # Required
-OPENAI_API_KEY=           # LLM provider
+GROQ_API_KEY=             # LLM provider (primary)
 TAVILY_API_KEY=           # Search API
 
 # Optional
+OPENROUTER_API_KEY=       # Alternative LLM provider
+DEFAULT_MODEL=llama-3.3-70b-versatile
 ENVIRONMENT=development
 DEBUG=true
 MAX_COST_PER_RUN=2.0
