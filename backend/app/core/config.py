@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     tavily_api_key: str = ""
 
     # Model Configuration
-    default_model: str = "llama-3.3-70b-versatile"
+    default_model: str = "openai/gpt-oss-120b"
 
     # Application
     environment: str = "development"

@@ -144,7 +144,7 @@ TAVILY_API_KEY=           # Search API
 
 # Optional
 OPENROUTER_API_KEY=       # Alternative LLM provider
-DEFAULT_MODEL=llama-3.3-70b-versatile
+DEFAULT_MODEL=openai/gpt-oss-120b
 ENVIRONMENT=development
 DEBUG=true
 MAX_COST_PER_RUN=2.0
