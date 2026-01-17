@@ -1,0 +1,3 @@
+"""
+Agentic Market Research Backend
+"""
